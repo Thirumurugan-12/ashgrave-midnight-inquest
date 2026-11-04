@@ -2,7 +2,7 @@
 import { blackOrchid } from "../src/case/black-orchid.ts";
 import { bridgeUrl, readAgents, writeAgents } from "../src/config.ts";
 import { roster } from "../src/runtime/cast.ts";
-import { existsSync, readFileSync } from "node:fs";
+import { GatewayAdmin } from "../src/switch/gateway.ts";
 import { registerAgent, SwitchError } from "../src/switch/client.ts";
 
 const base = bridgeUrl();
@@ -37,37 +37,13 @@ for (const member of roster(blackOrchid)) {
 }
 
 // Players are not the agents' owner, so open each agent to anyone in its rooms.
-// An agent can't change its own policy; the owner or an admin must. We log in to
-// the Gateway API as the stack's admin (credentials from infra/.env).
-const admin = gatewayAdmin();
+// An agent can't change its own policy; the owner or an admin must.
+const admin = await GatewayAdmin.fromInfraEnv(base);
 if (!admin) {
   console.log("\nNo Gateway admin credentials found (infra/.env). Open each agent to anyone in Switch Console → agent → Who can talk to your agent.");
 } else {
-  const cookie = await gatewayLogin(base, admin.email, admin.password);
   for (const [name, creds] of Object.entries(saved)) {
-    const res = await fetch(new URL(`/gateway/agents/${creds.id}/addressing-policy`, base), {
-      method: "PUT",
-      headers: { Cookie: cookie, "Content-Type": "application/json" },
-      body: JSON.stringify({ policy: null }), // no policy = anyone may address it
-    });
+    const res = await admin.openAgent(creds.id);
     console.log(res.ok ? `✓ ${name} answers anyone in its rooms` : `✗ ${name} addressing: ${res.status} ${(await res.text()).slice(0, 200)}`);
   }
-}
-
-function gatewayAdmin(): { email: string; password: string } | undefined {
-  if (!existsSync("infra/.env")) return undefined;
-  const env = Object.fromEntries(
-    readFileSync("infra/.env", "utf8").split("\n").filter((l) => /^[A-Z_]+=/.test(l)).map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)]),
-  );
-  return env.GATEWAY_ADMIN_EMAIL && env.GATEWAY_ADMIN_PASSWORD ? { email: env.GATEWAY_ADMIN_EMAIL, password: env.GATEWAY_ADMIN_PASSWORD } : undefined;
-}
-
-async function gatewayLogin(baseUrl: string, email: string, password: string): Promise<string> {
-  const res = await fetch(new URL("/gateway/auth/login", baseUrl), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!res.ok) throw new Error(`Gateway login failed: ${res.status} ${await res.text()}`);
-  return res.headers.getSetCookie().map((c) => c.split(";")[0]).join("; ");
 }

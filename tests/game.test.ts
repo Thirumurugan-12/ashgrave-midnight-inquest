@@ -124,3 +124,34 @@ test("no innocent prompt material names the killer as guilty", () => {
   const ghost = [blackOrchid.ghost.persona, ...blackOrchid.ghost.memories.map((m) => m.memory)].join(" ");
   assert.doesNotMatch(ghost, /\bVale\b/);
 });
+
+test("ordinary questions don't count as presenting evidence", () => {
+  const { g } = started();
+  const vale = g.suspectByAgent("dr-vale")!;
+  g.command(thiru, "room-shared", "@game-master search study", t0);
+  g.lab("@forensics-lab the tonic bottle");
+  for (const q of [
+    "you mixed the tonic. When did you leave tonight?",
+    "was it digitalis that stopped her heart?",
+    "why is the glass so cold in here?",
+  ]) {
+    assert.equal(g.suspect(vale, q).fresh.length, 0, q);
+  }
+  assert.equal(g.suspect(vale, "the lab says your tonic bottle holds twenty times a safe dose").fresh.length, 1);
+});
+
+test("the washed glass still cracks the housekeeper once tested", () => {
+  const { g } = started();
+  const holloway = g.suspectByAgent("mrs-holloway")!;
+  g.command(thiru, "room-shared", "@game-master search kitchen", t0);
+  g.lab("@forensics-lab the damp glass");
+  assert.equal(g.suspect(holloway, "you washed the glass, didn't you?").fresh.length, 1);
+});
+
+test("the lab understands loose names and asks when unsure", () => {
+  const { g } = started();
+  g.command(thiru, "room-shared", "@game-master search conservatory", t0);
+  g.command(thiru, "room-shared", "@game-master search study", t0);
+  assert.match(g.lab("@forensics-lab test the tonic").text, /Which one\? .*Tonic tray.*Tonic bottle|Which one\? .*Tonic bottle.*Tonic tray/);
+  assert.match(g.lab("@forensics-lab the desk please").text, /surgeon's probe/);
+});

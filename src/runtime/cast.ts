@@ -143,6 +143,7 @@ export async function handle(agent: string, msg: Incoming, deps: CastDeps): Prom
       situation: game.caseFile(),
       prompt: `Conversation so far:\n${transcript.render(msg.roomId, 40)}\n\n${msg.senderName} asks you: ${stripMentions(msg.body)}`,
       fallbackLine: game.caseFile(),
+      effort: "low", // comparing statements needs a little more thought
     });
     await say(reply);
     return;
@@ -159,6 +160,7 @@ export async function handle(agent: string, msg: Incoming, deps: CastDeps): Prom
       situation,
       prompt: `Recent conversation:\n${transcript.render(msg.roomId)}\n\n${msg.senderName} says to you: ${stripMentions(msg.body)}`,
       fallbackLine: fresh[0] ? `*${fresh[0]}*` : "*The ghost flickers, and says nothing.*",
+      effort: "minimal", // short in-character lines; twice as fast as "low"
     });
     await say(reply);
     return;
@@ -182,6 +184,7 @@ export async function handle(agent: string, msg: Incoming, deps: CastDeps): Prom
     situation,
     prompt: `Recent conversation:\n${transcript.render(msg.roomId)}\n\n${msg.senderName} says to you: ${stripMentions(msg.body)}`,
     fallbackLine: `*${suspect.name} looks away and says nothing.*`,
+    effort: "minimal",
   });
   await say(reply);
   if (fresh.length) {

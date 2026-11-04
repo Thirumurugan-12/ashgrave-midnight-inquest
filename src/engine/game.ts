@@ -222,7 +222,14 @@ export class Game {
   lab(raw: string): { text: string; tested?: Evidence } {
     if (this.phase !== "playing") return { text: "The lab is closed until the inquest begins." };
     const found = this.data.evidence.filter((e) => this.found.has(e.id) && e.location !== "testimony");
-    const [e] = matchItems(stripMentions(raw), found);
+    const text = stripMentions(raw);
+    let [e] = matchItems(text, found);
+    if (!e) {
+      // Be forgiving at the lab bench: "test the tonic" can mean any item with "tonic" in its name.
+      const loose = found.filter((f) => f.name.toLowerCase().split(/\W+/).some((w) => w.length > 3 && mentions(text, w)));
+      if (loose.length > 1) return { text: `🔬 Which one? ${loose.map((f) => f.name).join(" or ")}.` };
+      e = loose[0];
+    }
     if (!e) {
       const names = found.map((f) => f.name).join(", ");
       return { text: `🔬 Bring me something you have actually found. ${names ? `On the bench: ${names}.` : "The bench is empty."}` };

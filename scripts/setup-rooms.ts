@@ -10,6 +10,7 @@ import { bridgeUrl, readAgents, ROOMS_FILE } from "../src/config.ts";
 import { GM, type RoomDirectory } from "../src/engine/game.ts";
 import { roster } from "../src/runtime/cast.ts";
 import { SwitchAgent } from "../src/switch/client.ts";
+import { GatewayAdmin } from "../src/switch/gateway.ts";
 
 const players = (process.env.PLAYERS ?? "detective").split(",").map((p) => p.trim()).filter(Boolean);
 const creds = readAgents()[GM];
@@ -29,6 +30,12 @@ if (!bridgeId) {
   process.exit(1);
 }
 console.log(`Mattermost bridge: ${bridgeId}`);
+
+// Switch greets with "Hi! Tag @agent…" whenever an agent joins a room. That breaks
+// the mood, so turn it off before the characters join.
+const admin = await GatewayAdmin.fromInfraEnv(bridgeUrl());
+const off = await admin?.disableGreetings(bridgeId);
+console.log(off?.ok ? "✓ agent greetings off" : `• could not turn greetings off (${off?.status ?? "no admin credentials"})`);
 
 const existing: RoomDirectory = existsSync(ROOMS_FILE) ? JSON.parse(readFileSync(ROOMS_FILE, "utf8")) : { shared: "", private: {} };
 const rooms: RoomDirectory = { shared: existing.shared?.match(/^[0-9a-f-]{36}$/) ? existing.shared : "", private: {} };

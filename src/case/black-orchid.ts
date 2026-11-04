@@ -60,7 +60,7 @@ export const blackOrchid: Case = {
       id: "tonic-bottle",
       name: "Tonic bottle",
       location: "study",
-      keywords: ["bottle", "tonic", "medicine", "tincture", "vial"],
+      keywords: ["bottle", "tonic bottle", "tincture", "vial", "twenty times"],
       description:
         "A brown bottle on the study tray, labelled in Dr. Vale's hand: \"Lady A. One glass at bedtime.\" Half empty.",
       lab:
@@ -71,7 +71,7 @@ export const blackOrchid: Case = {
       id: "burned-letter",
       name: "Burned letter",
       location: "study",
-      keywords: ["letter", "fireplace", "scrap", "ash", "burned", "burnt", "scorched"],
+      keywords: ["letter", "fireplace", "scrap", "burned", "burnt", "scorched"],
       description:
         "A scorched scrap of paper from the study fireplace. Most of the ink has gone brown.",
       lab:
@@ -83,7 +83,7 @@ export const blackOrchid: Case = {
       id: "kitchen-glass",
       name: "Damp glass",
       location: "kitchen",
-      keywords: ["glass", "drying rack", "rack", "crystal", "washed"],
+      keywords: ["damp glass", "drying rack", "crystal glass", "washed glass", "washed the glass", "wet glass", "glass on the rack"],
       description:
         "A crystal glass on the drying rack, still damp. The only glass out at this hour.",
       lab:
@@ -174,7 +174,7 @@ export const blackOrchid: Case = {
       id: "chemist-book",
       seat: 3,
       text: "The village chemist's book: \"Dr. E. Vale. Tincture of digitalis, large bottle, refilled Monday.\"",
-      keywords: ["chemist", "refill", "refilled", "monday", "digitalis"],
+      keywords: ["chemist", "refill", "refilled", "chemist's book"],
       supports: ["who", "how"],
     },
     {
