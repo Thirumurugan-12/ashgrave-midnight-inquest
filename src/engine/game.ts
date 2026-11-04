@@ -31,6 +31,46 @@ export interface GameOptions {
 
 export const GM = "game-master";
 
+export interface Verdict {
+  by: string;
+  accused: string;
+  right: boolean;
+  howOk: boolean;
+  whyOk: boolean;
+  liesCaught: number;
+  score: number;
+  /** Only filled in once the game is over. */
+  reveal: string;
+  killer: string;
+}
+
+/** What one player's game window may show. Never contains the solution while playing. */
+export interface Snapshot {
+  phase: Phase;
+  act: number;
+  actTitle: string;
+  nextActAt: number | null;
+  labTestsLeft: number;
+  liesCaught: number;
+  players: Array<{ name: string; seat: number }>;
+  you: { name: string; seat: number } | null;
+  locations: Array<{ id: string; label: string; searched: boolean }>;
+  evidence: Array<{
+    id: string;
+    name: string;
+    location: string;
+    description: string;
+    testable: boolean;
+    tested: boolean;
+    lab: string | null;
+    testimony: boolean;
+  }>;
+  clues: Array<{ id: string; text: string }>;
+  suspects: Array<{ id: string; agent: string; name: string; role: string; cracked: number; gone: boolean }>;
+  ghost: { agent: string; name: string; memories: string[] };
+  verdict: Verdict | null;
+}
+
 export type Phase = "lobby" | "playing" | "over";
 
 export class Game {
@@ -45,6 +85,8 @@ export class Game {
   ghostRecalled = new Set<GhostMemory>();
   valeGone = false;
   labTestsLeft: number;
+  searched = new Set<string>();
+  verdict?: Verdict;
   private actStartedAt = 0;
   private nextActAt = Infinity;
 
@@ -90,6 +132,49 @@ export class Game {
       }),
     );
     return { mentioned, proof };
+  }
+
+  // ---------- game window ----------
+
+  snapshot(playerName?: string): Snapshot {
+    const you = [...this.players.values()].find((p) => p.name.toLowerCase() === playerName?.toLowerCase()) ?? null;
+    return {
+      phase: this.phase,
+      act: this.act,
+      actTitle: this.data.acts.find((a) => a.number === this.act)?.title ?? "",
+      nextActAt: Number.isFinite(this.nextActAt) && this.phase === "playing" ? this.nextActAt : null,
+      labTestsLeft: this.labTestsLeft,
+      liesCaught: this.liesCaught,
+      players: [...this.players.values()].map((p) => ({ name: p.name, seat: p.seat })),
+      you: you ? { name: you.name, seat: you.seat } : null,
+      locations: Object.entries(this.data.locations).map(([id, label]) => ({ id, label, searched: this.searched.has(id) })),
+      evidence: [...this.found].map((id) => {
+        const e = this.evidence(id)!;
+        return {
+          id: e.id,
+          name: e.name,
+          location: e.location,
+          description: e.description,
+          testable: Boolean(e.lab),
+          tested: this.labDone.has(e.id),
+          lab: this.labDone.has(e.id) ? (e.lab ?? null) : null,
+          testimony: e.location === "testimony",
+        };
+      }),
+      clues: you
+        ? this.data.privateClues.filter((c) => this.dealt.get(c.id) === you.id).map((c) => ({ id: c.id, text: c.text }))
+        : [],
+      suspects: this.data.suspects.map((s) => ({
+        id: s.id,
+        agent: s.agent,
+        name: s.name,
+        role: s.role,
+        cracked: s.cracks.filter((c) => this.cracked.has(c)).length,
+        gone: s.id === this.data.solution.killer && this.valeGone,
+      })),
+      ghost: { agent: this.data.ghost.agent, name: this.data.ghost.name, memories: [...this.ghostRecalled].map((m) => m.memory) },
+      verdict: this.phase === "over" ? (this.verdict ?? null) : null,
+    };
   }
 
   // ---------- game master commands ----------
@@ -192,6 +277,7 @@ export class Game {
       (p) => mentions(where, p) || mentions(where, p.replace(/-/g, " ")),
     ) ?? (mentions(where, "clara") ? "clara-room" : mentions(where, "boot room") || mentions(where, "servants") ? "back-door" : undefined);
     if (!place) return `Search where? ${Object.keys(this.data.locations).join(", ")}`;
+    this.searched.add(place);
     const items = this.data.evidence.filter(
       (e) => e.location === place && (e.appearsInAct ?? 1) <= this.act,
     );
@@ -302,6 +388,7 @@ export class Game {
     const whyOk = right && why.some((id) => sol.why.includes(id));
     const score = (right ? 3 : -2) + (howOk ? 2 : 0) + (whyOk ? 2 : 0) + this.liesCaught;
     this.phase = "over";
+    this.verdict = { by: player.name, accused: suspect.id, right, howOk, whyOk, liesCaught: this.liesCaught, score, reveal: sol.reveal, killer: sol.killer };
     const verdict = right
       ? `✅ **${suspect.name} is the killer.**`
       : `❌ **${suspect.name} is innocent.** The real killer walks free tonight.`;

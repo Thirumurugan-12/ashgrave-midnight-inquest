@@ -20,7 +20,7 @@ function started() {
 test("start deals every private clue into the holders' private rooms", () => {
   const { g, posts } = started();
   assert.equal(g.act, 1);
-  const clues = posts.filter((p) => p.text.includes("private clue"));
+  const clues = posts.filter((p) => p.text.includes("Your private clue"));
   assert.equal(clues.length, 4);
   assert.deepEqual(new Set(clues.map((p) => p.roomId)), new Set(["room-thiru", "room-priya"]));
 });
@@ -154,4 +154,17 @@ test("the lab understands loose names and asks when unsure", () => {
   g.command(thiru, "room-shared", "@game-master search study", t0);
   assert.match(g.lab("@forensics-lab test the tonic").text, /Which one\? .*Tonic tray.*Tonic bottle|Which one\? .*Tonic bottle.*Tonic tray/);
   assert.match(g.lab("@forensics-lab the desk please").text, /surgeon's probe/);
+});
+
+test("a player's snapshot never leaks the solution or other players' clues", () => {
+  const { g } = started();
+  g.command(thiru, "room-shared", "@game-master search conservatory", t0);
+  const snap = g.snapshot("thiru");
+  const json = JSON.stringify(snap);
+  assert.equal(snap.verdict, null);
+  assert.doesNotMatch(json, /What really happened|killer/i);
+  assert.ok(snap.evidence.every((e) => e.lab === null), "untested lab results stay hidden");
+  const priyaClues = g.snapshot("priya").clues.map((c) => c.id);
+  assert.ok(snap.clues.length > 0 && snap.clues.every((c) => !priyaClues.includes(c.id)));
+  assert.ok(snap.locations.find((l) => l.id === "conservatory")!.searched);
 });

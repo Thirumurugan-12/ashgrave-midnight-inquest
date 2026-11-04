@@ -14,22 +14,31 @@
     "start": "tsx --env-file-if-exists=.env src/main.ts",
     "sim": "tsx --env-file-if-exists=.env scripts/sim.ts",
     "test": "tsx --test tests/*.test.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p ui",
     "infra:init": "bash scripts/infra-init.sh",
     "infra:up": "docker compose --env-file infra/.env -f infra/docker-compose.yml --profile collab --profile gateway up -d",
     "infra:down": "docker compose --env-file infra/.env -f infra/docker-compose.yml --profile collab --profile gateway down",
     "infra:logs": "docker compose --env-file infra/.env -f infra/docker-compose.yml --profile collab --profile gateway logs -f --tail=100",
     "infra:ps": "docker compose --env-file infra/.env -f infra/docker-compose.yml --profile collab --profile gateway ps",
-    "setup:rooms": "tsx --env-file-if-exists=.env scripts/setup-rooms.ts"
+    "setup:rooms": "tsx --env-file-if-exists=.env scripts/setup-rooms.ts",
+    "art": "tsx --env-file-if-exists=.env scripts/gen-art.ts",
+    "ui:dev": "vite --config ui/vite.config.ts",
+    "ui:build": "vite build --config ui/vite.config.ts"
   },
   "dependencies": {
     "openai": "^7.50.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "ws": "^8.22.1"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@types/ws": "^8.18.2",
+    "@vitejs/plugin-react": "^6.2.1",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
   }
 }

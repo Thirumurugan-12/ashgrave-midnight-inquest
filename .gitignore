@@ -5,3 +5,4 @@ rooms.json
 *.log
 .DS_Store
 infra/.env
+ui/dist/
