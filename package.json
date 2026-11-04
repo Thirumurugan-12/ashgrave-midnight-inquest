@@ -1,0 +1,35 @@
+{
+  "name": "ashgrave-midnight-inquest",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A multiplayer gothic murder mystery where AI suspects live in Switch rooms (Mattermost).",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "probe": "tsx --env-file-if-exists=.env scripts/probe.ts",
+    "register": "tsx --env-file-if-exists=.env scripts/register.ts",
+    "rooms": "tsx --env-file-if-exists=.env scripts/rooms.ts",
+    "start": "tsx --env-file-if-exists=.env src/main.ts",
+    "sim": "tsx --env-file-if-exists=.env scripts/sim.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "infra:init": "bash scripts/infra-init.sh",
+    "infra:up": "docker compose --env-file infra/.env -f infra/docker-compose.yml --profile collab --profile gateway up -d",
+    "infra:down": "docker compose --env-file infra/.env -f infra/docker-compose.yml --profile collab --profile gateway down",
+    "infra:logs": "docker compose --env-file infra/.env -f infra/docker-compose.yml --profile collab --profile gateway logs -f --tail=100",
+    "infra:ps": "docker compose --env-file infra/.env -f infra/docker-compose.yml --profile collab --profile gateway ps",
+    "setup:rooms": "tsx --env-file-if-exists=.env scripts/setup-rooms.ts"
+  },
+  "dependencies": {
+    "openai": "^7.50.0",
+    "ws": "^8.22.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/ws": "^8.18.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
