@@ -20,7 +20,7 @@ export function Sidebar({ state, conn, actions }: { state: Snapshot; conn: GameC
 
   return (
     <aside className="sidebar">
-      <div className="tabs" role="tablist">
+      <div className="tabs" role="tablist" data-tour="tabs">
         <button role="tab" aria-selected={tab === "household"} onClick={() => setTab("household")}>Household</button>
         <button role="tab" aria-selected={tab === "case"} onClick={() => setTab("case")}>
           Case file <span className="count">{state.evidence.length + state.clues.length}</span>
@@ -41,6 +41,7 @@ export function Sidebar({ state, conn, actions }: { state: Snapshot; conn: GameC
 function Household({ state, thinking, actions }: { state: Snapshot; thinking: string[]; actions: Actions }) {
   return (
     <div className="household">
+      <div data-tour="household">
       <p className="section-label">Suspects</p>
       {state.suspects.map((s) => (
         <button key={s.agent} className={`person ${s.gone ? "gone" : ""}`} onClick={() => actions.open({ kind: "talk", agent: s.agent })} disabled={s.gone}>
@@ -53,6 +54,8 @@ function Household({ state, thinking, actions }: { state: Snapshot; thinking: st
           {thinking.includes(s.agent) && <span className="typing" aria-label="replying">•••</span>}
         </button>
       ))}
+      </div>
+      <div data-tour="others">
       <p className="section-label">The others</p>
       <button className="person ghost-card" onClick={() => actions.open({ kind: "talk", agent: state.ghost.agent })}>
         <img src={ART("ghost")} alt="" />
@@ -69,6 +72,7 @@ function Household({ state, thinking, actions }: { state: Snapshot; thinking: st
           <span className="person-role">{state.labTestsLeft} tests left tonight</span>
         </span>
       </button>
+      </div>
     </div>
   );
 }

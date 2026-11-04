@@ -29,7 +29,7 @@ export function Scene({ state, thinking, place, actions }: { state: Snapshot; fe
 
   return (
     <div className="scene">
-      <div className="scene-frame" key={place}>
+      <div className="scene-frame" key={place} data-tour="scene">
         <img className="scene-art" src={ART(meta.art)} alt={meta.title} />
         <div className="scene-rain" aria-hidden="true" />
         <div className="scene-fog" aria-hidden="true" />
@@ -93,7 +93,7 @@ export function Scene({ state, thinking, place, actions }: { state: Snapshot; fe
         )}
       </div>
 
-      <nav className="map" aria-label="Rooms of the house">
+      <nav className="map" aria-label="Rooms of the house" data-tour="map">
         {state.locations.map((l) => {
           const count = state.evidence.filter((e) => e.location === l.id).length;
           const fresh = l.searched && newInStudy(l.id);

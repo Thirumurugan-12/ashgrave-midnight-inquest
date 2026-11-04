@@ -168,3 +168,22 @@ test("a player's snapshot never leaks the solution or other players' clues", () 
   assert.ok(snap.clues.length > 0 && snap.clues.every((c) => !priyaClues.includes(c.id)));
   assert.ok(snap.locations.find((l) => l.id === "conservatory")!.searched);
 });
+
+test("a quick game shortens the acts", () => {
+  const g = new Game(blackOrchid, rooms, opts);
+  g.command(thiru, "room-shared", "@game-master start quick", t0);
+  assert.equal(g.pace, "quick");
+  assert.equal(g.snapshot("thiru").nextActAt, t0 + 5 * 60_000);
+  const posts = g.tick(t0 + 10 * 60_000 + 1); // act II -> ...
+  assert.equal(g.act, 2);
+  g.tick(t0 + 20 * 60_000);
+  assert.equal(g.act, 3);
+  assert.match(g.data.acts[2]!.opening, /\{minutes\}/);
+  void posts;
+});
+
+test("playing alone deals every private clue to you", () => {
+  const g = new Game(blackOrchid, rooms, opts);
+  g.command(thiru, "room-shared", "@game-master start", t0);
+  assert.equal(g.snapshot("thiru").clues.length, 4);
+});

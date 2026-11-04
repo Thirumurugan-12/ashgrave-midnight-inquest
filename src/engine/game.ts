@@ -47,6 +47,7 @@ export interface Verdict {
 /** What one player's game window may show. Never contains the solution while playing. */
 export interface Snapshot {
   phase: Phase;
+  pace: "full" | "quick";
   act: number;
   actTitle: string;
   nextActAt: number | null;
@@ -87,6 +88,8 @@ export class Game {
   labTestsLeft: number;
   searched = new Set<string>();
   verdict?: Verdict;
+  /** "quick" shortens the acts so one person can finish a case in about 15 minutes. */
+  pace: "full" | "quick" = "full";
   private actStartedAt = 0;
   private nextActAt = Infinity;
 
@@ -140,6 +143,7 @@ export class Game {
     const you = [...this.players.values()].find((p) => p.name.toLowerCase() === playerName?.toLowerCase()) ?? null;
     return {
       phase: this.phase,
+      pace: this.pace,
       act: this.act,
       actTitle: this.data.acts.find((a) => a.number === this.act)?.title ?? "",
       nextActAt: Number.isFinite(this.nextActAt) && this.phase === "playing" ? this.nextActAt : null,
@@ -191,7 +195,10 @@ export class Game {
       return reply("🕯️ A new night at Ashgrave. Everyone say `@game-master join`, then `@game-master start`.");
     }
     if (verb === "join") return reply(this.join(player));
-    if (verb === "start") return this.start(player, roomId, now);
+    if (verb === "start") {
+      if (this.phase === "lobby") this.pace = mentions(text, "quick") ? "quick" : "full";
+      return this.start(player, roomId, now);
+    }
     if (this.phase === "lobby") return reply("The inquest has not begun. Everyone say `@game-master join`, then `@game-master start`.");
     if (this.phase === "over") return reply("This case is closed. Say `@game-master reset` to play again.");
 
@@ -249,15 +256,18 @@ export class Game {
     this.actStartedAt = now;
     const act = this.data.acts.find((a) => a.number === n)!;
     const min = 60_000;
-    if (n === 1 || n === 2) this.nextActAt = now + this.opts.actMinutes * min;
-    else if (n === 3) this.nextActAt = now + this.opts.carriageMinutes * min;
+    const actMin = this.pace === "quick" ? Math.min(this.opts.actMinutes, 5) : this.opts.actMinutes;
+    const carriageMin = this.pace === "quick" ? Math.min(this.opts.carriageMinutes, 4) : this.opts.carriageMinutes;
+    if (n === 1 || n === 2) this.nextActAt = now + actMin * min;
+    else if (n === 3) this.nextActAt = now + carriageMin * min;
     else this.nextActAt = Infinity;
     const posts: Post[] = [];
     if (n === 4 && !this.valeGone) {
       this.valeGone = true;
       posts.push({ agent: GM, roomId: this.rooms.shared, text: "🐎 *Wheels on the gravel. Dr. Vale's carriage has left Ashgrave.*" });
     }
-    posts.push({ agent: GM, roomId: this.rooms.shared, text: act.opening.replace("{minutes}", String(this.opts.carriageMinutes)) });
+    const carriage = this.pace === "quick" ? Math.min(this.opts.carriageMinutes, 4) : this.opts.carriageMinutes;
+    posts.push({ agent: GM, roomId: this.rooms.shared, text: act.opening.replace("{minutes}", String(carriage)) });
     return posts;
   }
 

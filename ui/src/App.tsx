@@ -11,6 +11,7 @@ import { Accuse } from "./components/Accuse.tsx";
 import { Verdict } from "./components/Verdict.tsx";
 import { ActCard } from "./components/ActCard.tsx";
 import { Toasts, type Toast } from "./components/Toasts.tsx";
+import { Tour } from "./components/Tour.tsx";
 import { sound } from "./sound.ts";
 
 export type Modal =
@@ -32,6 +33,23 @@ export default function App() {
   const [place, setPlace] = useState("conservatory");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [actShown, setActShown] = useState(0);
+  const [touring, setTouring] = useState(false);
+  const [toured, setToured] = useState(() => {
+    try {
+      return localStorage.getItem("ashgrave.toured") === "1";
+    } catch {
+      return false;
+    }
+  });
+  const finishTour = () => {
+    setTouring(false);
+    setToured(true);
+    try {
+      localStorage.setItem("ashgrave.toured", "1");
+    } catch {
+      /* private mode: the tour just shows again next time */
+    }
+  };
 
   const actions: Actions = useMemo(
     () => ({ say: conn.say, open: setModal, go: setPlace }),
@@ -78,7 +96,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <TopBar state={state} conn={conn} onAccuse={() => setModal({ kind: "accuse" })} />
+      <TopBar state={state} conn={conn} onAccuse={() => setModal({ kind: "accuse" })} onTour={() => setTouring(true)} />
       <main className="stage">
         <section className="scene-col">
           <Hint state={state} actions={actions} place={place} />
@@ -87,13 +105,14 @@ export default function App() {
         <Sidebar state={state} conn={conn} actions={actions} />
       </main>
 
-      {state.phase === "lobby" && <Lobby state={state} conn={conn} />}
+      {state.phase === "lobby" && !touring && <Lobby state={state} conn={conn} toured={toured} onTour={() => setTouring(true)} />}
+      {touring && <Tour onDone={finishTour} />}
       {modal?.kind === "talk" && (
         <Interrogation key={modal.agent} agent={modal.agent} present={modal.present} state={state} feed={feed} thinking={conn.thinking} actions={actions} onClose={() => setModal(null)} />
       )}
       {modal?.kind === "lab" && <Lab item={modal.item} state={state} feed={feed} thinking={conn.thinking} actions={actions} onClose={() => setModal(null)} />}
       {modal?.kind === "accuse" && <Accuse state={state} actions={actions} onClose={() => setModal(null)} />}
-      {actCardOpen && state.phase === "playing" && (
+      {actCardOpen && !touring && state.phase === "playing" && (
         <ActCard act={state.act} title={state.actTitle} opening={actOpening} onClose={() => setActCardOpen(false)} />
       )}
       {state.verdict && <Verdict state={state} actions={actions} />}

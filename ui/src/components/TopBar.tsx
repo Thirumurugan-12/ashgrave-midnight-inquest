@@ -3,7 +3,7 @@ import type { GameConnection, Snapshot } from "../net.ts";
 import { ROMAN } from "../data.ts";
 import { sound } from "../sound.ts";
 
-export function TopBar({ state, conn, onAccuse }: { state: Snapshot; conn: GameConnection; onAccuse(): void }) {
+export function TopBar({ state, conn, onAccuse, onTour }: { state: Snapshot; conn: GameConnection; onAccuse(): void; onTour(): void }) {
   const [now, setNow] = useState(Date.now());
   const [audio, setAudio] = useState(sound.on);
   useEffect(() => {
@@ -17,26 +17,21 @@ export function TopBar({ state, conn, onAccuse }: { state: Snapshot; conn: GameC
   return (
     <header className="topbar">
       <div className="brand">Ashgrave</div>
-      {state.phase === "playing" && (
-        <>
-          <div className="act">
-            <span className="act-num">Act {ROMAN[state.act]}</span>
-            <span className="act-title">{state.actTitle}</span>
-          </div>
-          {mmss && (
-            <div className={`clock ${carriage ? "urgent" : ""}`} title={carriage ? "Until Dr. Vale's carriage leaves" : "Until the next bell"}>
-              <span aria-hidden="true">{carriage ? "🐎" : "🔔"}</span> {mmss}
-            </div>
-          )}
-          <div className="stat" title="Lab tests left">🔬 {state.labTestsLeft}</div>
-          <div className="stat" title="Lies caught">🧩 {state.liesCaught}</div>
-          <button className="btn small accuse-btn" onClick={onAccuse}>
-            Accuse
-          </button>
-        </>
-      )}
+      <div className="act">
+        <span className="act-num">{state.act ? `Act ${ROMAN[state.act]}` : "Not begun"}</span>
+        <span className="act-title">{state.actTitle}</span>
+      </div>
+      <div className={`clock ${carriage ? "urgent" : ""}`} data-tour="clock" title={carriage ? "Until Dr. Vale's carriage leaves" : "Until the next bell"}>
+        <span aria-hidden="true">{carriage ? "🐎" : "🔔"}</span> {mmss ?? "—:—"}
+      </div>
+      <div className="stat" title="Lab tests left">🔬 {state.labTestsLeft}</div>
+      <div className="stat" title="Lies caught">🧩 {state.liesCaught}</div>
+      <button className="btn small accuse-btn" data-tour="accuse" onClick={onAccuse} disabled={state.phase !== "playing"}>
+        Accuse
+      </button>
       <div className="spacer" />
-      <a className="synced" href={conn.mattermostUrl ?? "#"} target="_blank" rel="noreferrer" title="Every action here is posted in the Switch room on Mattermost">
+      <button className="icon-btn" onClick={onTour} title="How to play">?</button>
+      <a className="synced" data-tour="switch" href={conn.mattermostUrl ?? "#"} target="_blank" rel="noreferrer" title="Every action here is posted in the Switch room on Mattermost">
         <span className="dot" /> Live in #conservatory via Switch ↗
       </a>
       <button
