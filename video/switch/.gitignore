@@ -1,0 +1,10 @@
+.hyperframes/
+.thumbnails/
+.waveform-cache/
+assets/bgm/*.log
+assets/bgm/track.wav
+assets/footage/play.mp4
+node_modules/
+renders/
+assets/footage/game.mp4
+assets/footage/chat.mp4

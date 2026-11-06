@@ -1,0 +1,47 @@
+<template>
+  <style>
+    @font-face { font-family: "IM Fell English SC"; src: url("assets/fonts/im-fell-sc.woff2") format("woff2"); }
+    @font-face { font-family: "IM Fell English"; font-style: italic; src: url("assets/fonts/im-fell-italic.woff2") format("woff2"); }
+    @font-face { font-family: "Courier Prime"; font-weight: 700; src: url("assets/fonts/courier-prime-bold.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0d100f; }
+    .shot { position: absolute; inset: 0; }
+    .full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .slip { position: absolute; left: 110px; bottom: 110px; z-index: 20; }
+    .slip-in { position: relative; padding: 24px 44px 26px; background: linear-gradient(#ecdfbf, #d8c59c); color: #2b2419;
+      border: 2px solid #8a5a20; border-radius: 2px; box-shadow: 0 18px 40px #000a, inset 0 0 40px #8a5a2033; }
+    .slip-in h2 { margin: 0; font: 400 70px/1.05 "IM Fell English SC", serif; white-space: nowrap; }
+    .slip-in p { margin: 10px 0 0; font: italic 34px/1.2 "IM Fell English", serif; color: #5a4630; }
+    .pin { position: absolute; top: -12px; left: 50%; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff9a8a, #9c2a20 70%); box-shadow: 0 4px 6px #0009; }
+    .pane { position: absolute; top: 0; width: 960px; height: 1080px; overflow: hidden; }
+    .pane video { position: absolute; left: 0; top: 0; width: 960px; height: 1080px; object-fit: cover; }
+    .pane.left { left: 0; } .pane.right { left: 960px; }
+    .seam { position: absolute; left: 957px; top: 0; width: 6px; height: 1080px; background: #e0a95c; z-index: 5; }
+    .tag { position: absolute; top: 28px; z-index: 6; padding: 8px 16px; background: #0d100fe6; color: #e2d6bb;
+      font: 700 28px/1 "Courier Prime", monospace; letter-spacing: 0.04em; border-left: 4px solid #e0a95c; }
+    .cork { position: absolute; inset: 0; background-color: #6b4a2b;
+      background-image: radial-gradient(#0003 1px, transparent 1.6px), radial-gradient(#ffffff14 1px, transparent 1.4px);
+      background-size: 6px 6px, 9px 9px; background-position: 0 0, 3px 4px; box-shadow: inset 0 0 160px #000a; }
+    .pane.right video { object-position: 50% 100%; }
+  </style>
+  <div id="root" data-composition-id="both" data-width="1920" data-height="1080" data-layout-allow-overflow>
+    <div id="both-pg1" class="pane left"><video id="both-g1" class="clip" src="assets/footage/game.mp4" data-start="0" data-duration="4.4" data-media-start="31.01" muted playsinline></video></div>
+    <div id="both-pc1" class="pane right"><video id="both-c1" class="clip" src="assets/footage/chat.mp4" data-start="0" data-duration="4.4" data-media-start="31.01" muted playsinline></video></div>
+    <div id="both-pg2" class="pane left"><video id="both-g2" class="clip" src="assets/footage/game.mp4" data-start="4.4" data-duration="6.0" data-media-start="38.71" muted playsinline></video></div>
+    <div id="both-pc2" class="pane right"><video id="both-c2" class="clip" src="assets/footage/chat.mp4" data-start="4.4" data-duration="6.0" data-media-start="38.71" muted playsinline></video></div>
+    <div class="seam"></div>
+    <div id="both-tag1" class="tag" style="left: 40px">The game window</div>
+    <div id="both-tag2" class="tag" style="left: 1000px">Your team's Mattermost</div>
+    <div id="both-slip1" class="slip clip" data-start="0.5" data-duration="9.90">
+      <div id="both-slip1-in" class="slip-in">
+        <span class="pin"></span>
+        <h2 id="both-slip1-text">Ask in chat. Catch it in the game.</h2>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#both-slip1-in", { opacity: 0, y: -40, rotation: -6, scale: 1.06 }, { opacity: 1, y: 0, rotation: -2, scale: 1, duration: 0.35, ease: "back.out(2)" }, 0.5);
+    window.__timelines["both"] = tl;
+  </script>
+</template>

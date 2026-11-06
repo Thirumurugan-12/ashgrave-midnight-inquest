@@ -1,0 +1,15 @@
+{
+  "chatjoin": 1.5,
+  "chatstart": 6.84,
+  "gamestarts": 7.07,
+  "gameclick": 13.1,
+  "chatshows": 13.36,
+  "askvale": 19.54,
+  "valereplies": 22.58,
+  "askholloway": 32.66,
+  "hollowayreplies": 32.76,
+  "present": 38.77,
+  "lie": 42.64,
+  "clues": 48.21,
+  "end": 52.21
+}

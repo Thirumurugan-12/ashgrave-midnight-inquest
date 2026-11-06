@@ -1,0 +1,140 @@
+<template>
+  <style>
+    @font-face { font-family: "IM Fell English SC"; src: url("assets/fonts/im-fell-sc.woff2") format("woff2"); }
+    @font-face { font-family: "IM Fell English"; font-style: italic; src: url("assets/fonts/im-fell-italic.woff2") format("woff2"); }
+    @font-face { font-family: "Courier Prime"; font-weight: 700; src: url("assets/fonts/courier-prime-bold.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0d100f; }
+    .shot { position: absolute; inset: 0; }
+    .full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .slip { position: absolute; left: 110px; bottom: 110px; z-index: 20; }
+    .slip-in { position: relative; padding: 24px 44px 26px; background: linear-gradient(#ecdfbf, #d8c59c); color: #2b2419;
+      border: 2px solid #8a5a20; border-radius: 2px; box-shadow: 0 18px 40px #000a, inset 0 0 40px #8a5a2033; }
+    .slip-in h2 { margin: 0; font: 400 70px/1.05 "IM Fell English SC", serif; white-space: nowrap; }
+    .slip-in p { margin: 10px 0 0; font: italic 34px/1.2 "IM Fell English", serif; color: #5a4630; }
+    .pin { position: absolute; top: -12px; left: 50%; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff9a8a, #9c2a20 70%); box-shadow: 0 4px 6px #0009; }
+    .pane { position: absolute; top: 0; width: 960px; height: 1080px; overflow: hidden; }
+    .pane video { position: absolute; left: 0; top: 0; width: 960px; height: 1080px; object-fit: cover; }
+    .pane.left { left: 0; } .pane.right { left: 960px; }
+    .seam { position: absolute; left: 957px; top: 0; width: 6px; height: 1080px; background: #e0a95c; z-index: 5; }
+    .tag { position: absolute; top: 28px; z-index: 6; padding: 8px 16px; background: #0d100fe6; color: #e2d6bb;
+      font: 700 28px/1 "Courier Prime", monospace; letter-spacing: 0.04em; border-left: 4px solid #e0a95c; }
+    .cork { position: absolute; inset: 0; background-color: #6b4a2b;
+      background-image: radial-gradient(#0003 1px, transparent 1.6px), radial-gradient(#ffffff14 1px, transparent 1.4px);
+      background-size: 6px 6px, 9px 9px; background-position: 0 0, 3px 4px; box-shadow: inset 0 0 160px #000a; }
+    .strings { position: absolute; left: 0; top: 0; z-index: 2; overflow: visible; }
+    .strings path { fill: none; stroke: #c0392b; stroke-width: 4; stroke-dasharray: 900; stroke-dashoffset: 900; }
+    .note { position: absolute; z-index: 3; width: 380px; padding: 30px 34px; background: #fdf6dc; color: #2b2419; box-shadow: 0 14px 30px #000a; }
+    .note.sw { height: 380px; background: #f1e3bd; border: 3px solid #8a5a20; }
+    .note h3 { margin: 0; font: 400 60px/1 "IM Fell English SC", serif; }
+    .note .sub { margin: 6px 0 0; font: italic 32px/1.2 "IM Fell English", serif; color: #5a4630; }
+    .note ul { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+    .note li { font: 700 30px/1.3 "Courier Prime", monospace; padding: 4px 10px; border-radius: 3px; }
+    .polaroid { position: absolute; z-index: 3; width: 190px; padding: 8px 8px 10px; background: #f1e8d4; color: #2b2419; text-align: center;
+      box-shadow: 0 10px 24px #000a; font: 400 28px/1.1 "IM Fell English SC", serif; }
+    .polaroid img { display: block; width: 174px; height: 170px; object-fit: cover; object-position: top; margin-bottom: 6px; }
+    .onstamp { position: absolute; left: 690px; top: 760px; z-index: 6; padding: 6px 18px; color: #d8443a; border: 4px double #d8443a;
+      background: #f1e8d4e6; font: 400 40px/1 "IM Fell English SC", serif; }
+    .proof { z-index: 10; }
+  </style>
+  <div id="root" data-composition-id="arch" data-width="1920" data-height="1080" data-layout-allow-overflow>
+    <div id="arch-cork" class="cork"></div>
+    <svg id="arch-strings" class="strings" width="1920" height="1080" viewBox="0 0 1920 1080"><path id="arch-s-mm" d="M520,520 Q600.0,580 680,520" /><path id="arch-s-gm" d="M1060,520 Q1080.0,455.0 1205,290" /><path id="arch-s-thomas" d="M1060,520 Q1185.0,455.0 1415,290" /><path id="arch-s-clara" d="M1060,520 Q1290.0,455.0 1625,290" /><path id="arch-s-vale" d="M1060,520 Q1080.0,615.0 1205,610" /><path id="arch-s-holloway" d="M1060,520 Q1185.0,615.0 1415,610" /><path id="arch-s-ghost" d="M1060,520 Q1290.0,615.0 1625,610" /><path id="arch-s-lab" d="M1060,520 Q1132.5,760.0 1310,900" /><path id="arch-s-clerk" d="M1060,520 Q1237.5,760.0 1520,900" /></svg>
+    <div id="arch-mm" class="note mm" style="left: 140px; top: 350px">
+      <span class="pin"></span>
+      <h3>Mattermost</h3>
+      <p class="sub">your team's chat</p>
+      <ul>
+        <li id="arch-ch1"># conservatory</li>
+        <li id="arch-ch2">&#128274; clues-detective</li>
+      </ul>
+    </div>
+    <div id="arch-sw" class="note sw" style="left: 680px; top: 330px">
+      <span class="pin"></span>
+      <h3>Switch</h3>
+      <ul>
+        <li id="arch-r1">rooms</li>
+        <li id="arch-r2">events</li>
+        <li id="arch-r3">@addressing</li>
+      </ul>
+    </div>
+    <div id="arch-a-gm" class="polaroid" style="left: 1205px; top: 170px">
+      <span class="pin"></span>
+      <img src="assets/art/title.webp" alt="" />
+      <b>Game Master</b>
+    </div>
+    <div id="arch-a-thomas" class="polaroid" style="left: 1415px; top: 170px">
+      <span class="pin"></span>
+      <img src="assets/art/thomas.webp" alt="" />
+      <b>Thomas Reed</b>
+    </div>
+    <div id="arch-a-clara" class="polaroid" style="left: 1625px; top: 170px">
+      <span class="pin"></span>
+      <img src="assets/art/clara.webp" alt="" />
+      <b>Clara Ashgrave</b>
+    </div>
+    <div id="arch-a-vale" class="polaroid" style="left: 1205px; top: 490px">
+      <span class="pin"></span>
+      <img src="assets/art/vale.webp" alt="" />
+      <b>Dr. Vale</b>
+    </div>
+    <div id="arch-a-holloway" class="polaroid" style="left: 1415px; top: 490px">
+      <span class="pin"></span>
+      <img src="assets/art/holloway.webp" alt="" />
+      <b>Mrs. Holloway</b>
+    </div>
+    <div id="arch-a-ghost" class="polaroid" style="left: 1625px; top: 490px">
+      <span class="pin"></span>
+      <img src="assets/art/ghost.webp" alt="" />
+      <b>The Ghost</b>
+    </div>
+    <div id="arch-a-lab" class="polaroid" style="left: 1310px; top: 780px">
+      <span class="pin"></span>
+      <img src="assets/art/lab.webp" alt="" />
+      <b>Forensics Lab</b>
+    </div>
+    <div id="arch-a-clerk" class="polaroid" style="left: 1520px; top: 780px">
+      <span class="pin"></span>
+      <img src="assets/art/study.webp" alt="" />
+      <b>Evidence Clerk</b>
+    </div>
+    <div id="arch-on" class="onstamp">8 agents &middot; always on</div>
+    <div id="arch-proof" class="shot proof" style="transform-origin: 55% 25%">
+      <img id="arch-proof-img" class="full clip" src="assets/footage/gw-agents.png" data-layout-allow-occlusion data-start="15.4" data-duration="3.1" alt="The Switch Gateway listing the eight Ashgrave agents" />
+    </div>
+    <div id="arch-slip1" class="slip clip" data-start="15.7" data-duration="2.80">
+      <div id="arch-slip1-in" class="slip-in">
+        <span class="pin"></span>
+        <h2 id="arch-slip1-text">The real agents, live in Switch</h2>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#arch-sw", { opacity: 0, y: -50, rotation: -4 }, { opacity: 1, y: 0, rotation: -1, duration: 0.45, ease: "back.out(1.8)" }, 0.5);
+    tl.fromTo("#arch-mm", { opacity: 0, y: -50, rotation: 4 }, { opacity: 1, y: 0, rotation: 1.5, duration: 0.45, ease: "back.out(1.8)" }, 2.6);
+    tl.fromTo("#arch-s-mm", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, 3.3);
+    tl.fromTo("#arch-ch1, #arch-ch2, #arch-r1", { backgroundColor: "rgba(224,169,92,0)" }, { backgroundColor: "rgba(224,169,92,0.45)", duration: 0.3, stagger: 0.15 }, 4.0);
+    tl.fromTo("#arch-r2, #arch-r3", { backgroundColor: "rgba(224,169,92,0)" }, { backgroundColor: "rgba(224,169,92,0.45)", duration: 0.3, stagger: 0.15 }, 5.8);
+    tl.fromTo("#arch-s-gm", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 5.60);
+    tl.fromTo("#arch-a-gm", { opacity: 0, y: -40, scale: 1.1, rotation: -6 }, { opacity: 1, y: 0, scale: 1, rotation: -3, duration: 0.4, ease: "back.out(2)" }, 8.6);
+    tl.fromTo("#arch-s-thomas", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 5.68);
+    tl.fromTo("#arch-a-thomas", { opacity: 0, y: -40, scale: 1.1, rotation: 4 }, { opacity: 1, y: 0, scale: 1, rotation: 2, duration: 0.4, ease: "back.out(2)" }, 10.4);
+    tl.fromTo("#arch-s-clara", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 5.76);
+    tl.fromTo("#arch-a-clara", { opacity: 0, y: -40, scale: 1.1, rotation: -3.0 }, { opacity: 1, y: 0, scale: 1, rotation: -1.5, duration: 0.4, ease: "back.out(2)" }, 10.55);
+    tl.fromTo("#arch-s-vale", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 5.84);
+    tl.fromTo("#arch-a-vale", { opacity: 0, y: -40, scale: 1.1, rotation: 5.0 }, { opacity: 1, y: 0, scale: 1, rotation: 2.5, duration: 0.4, ease: "back.out(2)" }, 10.7);
+    tl.fromTo("#arch-s-holloway", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 5.92);
+    tl.fromTo("#arch-a-holloway", { opacity: 0, y: -40, scale: 1.1, rotation: -4 }, { opacity: 1, y: 0, scale: 1, rotation: -2, duration: 0.4, ease: "back.out(2)" }, 10.85);
+    tl.fromTo("#arch-s-ghost", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 6.00);
+    tl.fromTo("#arch-a-ghost", { opacity: 0, y: -40, scale: 1.1, rotation: 3.0 }, { opacity: 1, y: 0, scale: 1, rotation: 1.5, duration: 0.4, ease: "back.out(2)" }, 11.9);
+    tl.fromTo("#arch-s-lab", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 6.08);
+    tl.fromTo("#arch-a-lab", { opacity: 0, y: -40, scale: 1.1, rotation: -5.0 }, { opacity: 1, y: 0, scale: 1, rotation: -2.5, duration: 0.4, ease: "back.out(2)" }, 12.6);
+    tl.fromTo("#arch-s-clerk", { strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, 6.16);
+    tl.fromTo("#arch-a-clerk", { opacity: 0, y: -40, scale: 1.1, rotation: 4 }, { opacity: 1, y: 0, scale: 1, rotation: 2, duration: 0.4, ease: "back.out(2)" }, 13.4);
+    tl.fromTo("#arch-on", { opacity: 0, scale: 2.2, rotation: -14 }, { opacity: 1, scale: 1, rotation: -8, duration: 0.35, ease: "back.out(1.6)" }, 14.4);
+    tl.fromTo("#arch-proof", { scale: 1.0 }, { scale: 1.25, duration: 3.1, ease: "power1.inOut" }, 15.4);
+    tl.fromTo("#arch-slip1-in", { opacity: 0, y: -40, rotation: -6, scale: 1.06 }, { opacity: 1, y: 0, rotation: -2, scale: 1, duration: 0.35, ease: "back.out(2)" }, 15.7);
+    window.__timelines["arch"] = tl;
+  </script>
+</template>
