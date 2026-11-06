@@ -49,7 +49,10 @@ function Household({ state, thinking, actions }: { state: Snapshot; thinking: st
           <span className="person-text">
             <span className="person-name">{s.name}</span>
             <span className="person-role">{s.gone ? "Has left Ashgrave" : s.role}</span>
-            {s.cracked > 0 && <span className="cracks">{"🧩".repeat(s.cracked)} lie{s.cracked > 1 ? "s" : ""} broken</span>}
+            <span className="cracks">
+              {s.claims.map((c, i) => <span key={i} className={`lie-dot ${c.broken ? "on" : ""}`} title={c.broken ? "Lie caught" : "Story holds, for now"} />)}
+              {s.cracked > 0 ? ` ${s.cracked}/${s.claims.length} lies caught` : ` ${s.claims.length} claim${s.claims.length > 1 ? "s" : ""} to test`}
+            </span>
           </span>
           {thinking.includes(s.agent) && <span className="typing" aria-label="replying">•••</span>}
         </button>
@@ -61,7 +64,7 @@ function Household({ state, thinking, actions }: { state: Snapshot; thinking: st
         <img src={ART("ghost")} alt="" />
         <span className="person-text">
           <span className="person-name">{state.ghost.name}</span>
-          <span className="person-role">{state.ghost.memories.length} memor{state.ghost.memories.length === 1 ? "y" : "ies"} recovered</span>
+          <span className="person-role">Stuck? She gives hints</span>
         </span>
         {thinking.includes(state.ghost.agent) && <span className="typing">•••</span>}
       </button>
@@ -69,7 +72,7 @@ function Household({ state, thinking, actions }: { state: Snapshot; thinking: st
         <img src={ART("lab")} alt="" />
         <span className="person-text">
           <span className="person-name">Forensics Lab</span>
-          <span className="person-role">{state.labTestsLeft} tests left tonight</span>
+          <span className="person-role">Four tests · unlimited tries</span>
         </span>
       </button>
       </div>
@@ -106,10 +109,13 @@ function CaseFile({ state, conn, actions }: { state: Snapshot; conn: GameConnect
           <div>
             <b>{e.name}</b>
             <p>{e.lab ?? e.description}</p>
+            {e.puzzle && !e.tested && (
+              <button className="btn tiny" onClick={() => actions.open({ kind: "letter" })}>Piece it together</button>
+            )}
             {e.testable && !e.tested && (
               <button className="btn tiny line" onClick={() => actions.open({ kind: "lab", item: e.id })}>Test it</button>
             )}
-            {e.tested && <span className="pill">🔬 tested</span>}
+            {e.tested && <span className="pill">{e.puzzle ? "📜 restored" : "🔬 tested"}</span>}
           </div>
         </div>
       ))}

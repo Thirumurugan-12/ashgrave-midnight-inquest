@@ -55,12 +55,12 @@ const demo = [
   "@forensics-lab the tonic bottle",
   "@dr-vale you mixed the tonic. When did you leave tonight?",
   "priya: @mrs-holloway the scullery maid saw you scrubbing a glass at the sink",
-  "@game-master next",
   "@game-master search study",
-  "@forensics-lab burned letter",
+  "@game-master restore the burned letter",
   "@dr-vale the gate ledger says your carriage left at 11:40",
+  "@ghost-of-verity I'm stuck. Give me a hint.",
   "@evidence-clerk what contradictions do we have?",
-  "priya: @game-master accuse dr vale how: the tonic bottle and the damp glass why: the burned letter",
+  "priya: @game-master accuse dr vale how: poison why: stolen discovery",
 ];
 
 console.log(`Ashgrave simulator · characters: ${live ? "Muse Spark" : "offline echo (set MODEL_API_KEY for real replies)"}`);

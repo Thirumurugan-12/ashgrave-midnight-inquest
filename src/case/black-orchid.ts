@@ -33,6 +33,7 @@ export const blackOrchid: Case = {
       lab:
         "Dried droplets on the petals: tincture of digitalis (foxglove), in a liquid spilled from a glass. The tag reads: \"Ashgrave's Midnight. Named for Lord Henry Ashgrave, whose foxglove studies may yet mend a failing heart.\"",
       supports: ["how", "why"],
+      reagent: "poison",
     },
     {
       id: "tonic-tray",
@@ -44,6 +45,7 @@ export const blackOrchid: Case = {
       lab:
         "The ring is the same bitter tincture: digitalis, far stronger than any medicine should be.",
       supports: ["how"],
+      reagent: "poison",
     },
     {
       id: "writing-desk",
@@ -55,6 +57,7 @@ export const blackOrchid: Case = {
       lab:
         "The scratches match a narrow steel instrument, such as a surgeon's probe. A smear of carbolic soap on the brass, the kind doctors scrub with.",
       supports: ["who"],
+      reagent: "metal",
     },
     {
       id: "tonic-bottle",
@@ -66,6 +69,7 @@ export const blackOrchid: Case = {
       lab:
         "Tincture of digitalis at roughly twenty times a safe dose. Enough to stop a weak heart within the hour.",
       supports: ["how", "who"],
+      reagent: "poison",
     },
     {
       id: "burned-letter",
@@ -75,9 +79,10 @@ export const blackOrchid: Case = {
       description:
         "A scorched scrap of paper from the study fireplace. Most of the ink has gone brown.",
       lab:
-        "Restored text: \"...my dearest Verity, should anything befall me, know that Edmund presented our Midnight remedy to the Society as his own. My notes in the desk prove it...\" Signed: H.",
+        "My dearest Verity, should anything befall me, know that Edmund presented our Midnight remedy to the Society as his own. My notes in the desk prove it. Your loving H.",
       appearsInAct: 2,
       supports: ["why", "who"],
+      puzzle: true,
     },
     {
       id: "kitchen-glass",
@@ -89,6 +94,7 @@ export const blackOrchid: Case = {
       lab:
         "Scrubbed clean, but a trace survives in the joint of the stem: digitalis. This is the glass from the tonic tray.",
       supports: ["how"],
+      reagent: "poison",
     },
     {
       id: "muddy-boots",
@@ -98,6 +104,7 @@ export const blackOrchid: Case = {
       description: "Thomas Reed's work boots by the servants' door, caked with fresh mud.",
       lab:
         "Potting bark and peat. Greenhouse soil, not road mud. Whoever wore these walked the greenhouse paths tonight, not the village lane.",
+      reagent: "soil",
     },
     {
       id: "london-crate",
@@ -106,8 +113,9 @@ export const blackOrchid: Case = {
       keywords: ["crate", "london", "pell", "covent garden", "straw"],
       description:
         "A crate packed tonight with twelve rare orchids, the straw still loose. Label: \"Mr. J. Pell, Covent Garden, London.\"",
-      lab: "Fresh-cut stems, packed within the last two hours.",
+      lab: "Fresh-cut stems and greenhouse peat, packed within the last two hours.",
       clears: "thomas",
+      reagent: "soil",
     },
     {
       id: "iou",
@@ -118,6 +126,7 @@ export const blackOrchid: Case = {
         "Clara's cloak, still wet with rain. In the pocket: \"I owe Mr. Barrow forty guineas. C. Ashgrave. Crown Inn, 11:30 pm.\"",
       lab: "The ink is barely an hour old. The rain spots on the cloak are fresher still.",
       clears: "clara",
+      reagent: "ink",
     },
     // Testimony: unlocked when a suspect's lie cracks. Never found by searching.
     {
@@ -204,6 +213,7 @@ export const blackOrchid: Case = {
       tell: "You wipe your hands on your apron when you lie. Mention it in italics now and then.",
       cracks: [
         {
+          claim: "I walked to the Crown Inn and stayed there till past midnight.",
           triggers: ["muddy-boots", "inn-closed", "london-crate"],
           admit:
             "You cannot keep up the inn story. Admit, ashamed, that you were in the greenhouse packing orchids to sell in London. Beg them not to tell. Then, to make amends, tell them something you have been afraid to say: at about twenty past eleven, from the greenhouse, you saw a lamp moving in the study window, though the doctor was meant to have gone home at a quarter past ten.",
@@ -230,6 +240,7 @@ export const blackOrchid: Case = {
       tell: "You twist your ring when you lie. Mention it in italics now and then.",
       cracks: [
         {
+          claim: "I went to bed at ten with a headache and never left my room.",
           triggers: ["iou"],
           admit:
             "The IOU ends the pretence. Admit you sneaked out to the card game and lost again; you are ashamed and furious with yourself. Then tell them what you saw: when you crept across the stable yard at a quarter to eleven, Dr. Vale's carriage was still standing there with the horse blanketed, though everyone says he left at a quarter past ten.",
@@ -255,16 +266,19 @@ export const blackOrchid: Case = {
       tell: "You polish your spectacles when pressed. Mention it in italics now and then.",
       cracks: [
         {
+          claim: "I left Ashgrave at a quarter past ten and was home by eleven.",
           triggers: ["gate-ledger", "carriage-in-yard", "study-lamp"],
           admit:
             "You cannot deny you were still at Ashgrave after a quarter past ten. Claim you sat in your carriage in the yard writing up case notes by lamplight, as is your habit, and only left at 11:40. Grow a touch colder. Do not confess.",
         },
         {
+          claim: "Her tonic was the usual gentle dose. I would never give her more.",
           triggers: ["chemist-book", "tonic-bottle"],
           admit:
             "You cannot deny the digitalis. Claim the large refill was for old Mrs. Dunning's dropsy in the village and that a careless servant must have mixed the dose. Do not confess.",
         },
         {
+          claim: "Lady Verity and I were the dearest of friends. There was no quarrel.",
           triggers: ["burned-letter", "henrys-letters"],
           admit:
             "You are visibly shaken. Call the letter the fantasy of a jealous dead man and a grieving widow, and say you will answer nothing more without your solicitor. Do not confess.",
@@ -290,6 +304,7 @@ export const blackOrchid: Case = {
       tell: "You smooth your apron and talk about the weather when you lie. Mention it in italics now and then.",
       cracks: [
         {
+          claim: "I carried up the tray and went to bed. I touched nothing after.",
           triggers: ["kitchen-glass", "maid-saw"],
           admit:
             "Break down. Admit you washed the glass because you were terrified of being blamed. Then tell them the truth that matters: tonight Dr. Vale mixed the tonic himself in the study, which he never does (he always leaves you the bottle), and he insisted she drink the whole glass. And confess you read letters on her desk last week: Lord Henry's letters saying the doctor took his work. Her ladyship meant to tell the Royal Society on Friday.",
@@ -360,33 +375,57 @@ export const blackOrchid: Case = {
       number: 1,
       title: "The Discovery",
       opening:
-        "🕯️ **Act I: The Discovery**\n\nThe storm has not let up all night. At 11:52 Mrs. Holloway's scream carries through Ashgrave Manor. Lady Verity Ashgrave lies cold on the conservatory chaise, a single black orchid in her hand. There is no wound. Dr. Vale, called back from home, murmurs *heart failure*.\n\nBut you have doubts. Search the house, question the household, and send what you find to the lab.\n\n• `@game-master search <place>` (places: conservatory, study, kitchen, greenhouse, back-door, clara-room)\n• `@forensics-lab <evidence>` to test something you found\n• `@ghost-of-verity` and show her what you found\n• `@<suspect>` to question someone: @thomas-reed, @clara-ashgrave, @dr-vale, @mrs-holloway\n\nCheck your private clues (the Case File in the game window, or your clues channel in chat). Each of you holds a clue no one else has.",
+        "🕯️ **Chapter I: The Discovery**\n\nThe storm has not let up all night. At 11:52 Mrs. Holloway's scream carries through Ashgrave Manor. Lady Verity Ashgrave lies cold on the conservatory chaise, a single black orchid in her hand. There is no wound. Dr. Vale, called back from home, murmurs *heart failure*.\n\nBut you have doubts. Search the house and send what you find to the lab.\n\n• `@game-master search <place>` (places: conservatory, study, kitchen, greenhouse, back-door, clara-room)\n• `@forensics-lab <evidence>` to test something you found\n• `@ghost-of-verity hint` when you are stuck\n• `@<suspect>` to question someone: @thomas-reed, @clara-ashgrave, @dr-vale, @mrs-holloway\n\nCheck your private clues (the Case File in the game window, or your clues channel in chat).",
+      goals: [
+        { text: "Find 4 pieces of evidence around the house", kind: "found", count: 4 },
+        { text: "Test one at the Forensics Lab", kind: "tested", count: 1 },
+      ],
     },
     {
       number: 2,
-      title: "Interrogation",
+      title: "Lies in the House",
       opening:
-        "🔔 **Act II: Interrogation**\n\nThe second bell. A housemaid comes running from the study, white as chalk: there is something in the fireplace that did not burn. (`@game-master search study`)\n\nThe household is gathered in the drawing room. Press them. Somebody here is lying, and perhaps more than one of them.",
+        "🔔 **Chapter II: Lies in the House**\n\nThe second bell. A housemaid comes running from the study, white as chalk: there is a letter in the fireplace that did not burn. (`@game-master search study`)\n\nEvery one of the household has told you a story. Some of those stories are lies. Show them the evidence that proves it.",
+      goals: [
+        { text: "Find the burned letter in the study and piece it together", kind: "restored" },
+        { text: "Catch 2 lies by presenting evidence", kind: "lies", count: 2 },
+      ],
     },
     {
       number: 3,
-      title: "The Doctor's Carriage",
-      opening:
-        "🐎 **Act III: The Doctor's Carriage**\n\nThe third bell. Dr. Vale has called for his carriage. He has other patients, he says, and the death certificate is signed. Once he is gone, he will answer no more questions.\n\nYou have **{minutes} minutes** before the doctor leaves Ashgrave.",
-    },
-    {
-      number: 4,
       title: "Midnight",
       opening:
-        "🕛 **Act IV: Midnight**\n\nThe great clock strikes. It is time to name the killer.\n\nMake your accusation with:\n`@game-master accuse <suspect> how: <evidence> why: <evidence>`\n\nExample: `@game-master accuse thomas how: muddy boots why: london crate`\n\nThe first accusation ends the game, so agree as a team before you call it.",
+        "🕛 **Chapter III: Midnight**\n\nThe great clock strikes twelve. Dr. Vale has called for his carriage: the death certificate is signed, he says, and he has other patients.\n\nBefore he goes, name the killer: who, how and why.\n`@game-master accuse <suspect> how: <means> why: <motive>`\n\nThe first accusation ends the game, so agree as a team before you call it.",
+      goals: [{ text: "Name the killer, how and why", kind: "accused" }],
     },
   ],
+
+  accusation: {
+    how: [
+      { id: "poison", text: "Poisoned with digitalis in her nightly heart tonic", keywords: ["poison", "poisoned", "digitalis", "tonic"] },
+      { id: "smothered", text: "Smothered with a cushion as she dozed", keywords: ["smothered", "cushion", "suffocated"] },
+      { id: "natural", text: "No one: her weak heart simply gave out", keywords: ["natural", "heart gave out", "weak heart"] },
+    ],
+    why: [
+      { id: "inherit", text: "To inherit Ashgrave and pay off gambling debts", keywords: ["inherit", "inheritance", "debts", "money"] },
+      { id: "stolen-work", text: "To stop her exposing a stolen discovery", keywords: ["stolen", "discovery", "expose", "exposing", "research", "letters"] },
+      { id: "orchids", text: "To hide the secret sale of her orchids", keywords: ["orchids", "sale", "selling"] },
+    ],
+  },
 
   solution: {
     killer: "vale",
     who: ["gate-ledger", "writing-desk", "chemist-book", "tonic-bottle", "study-lamp", "carriage-in-yard", "vale-mixed-tonic", "burned-letter"],
     how: ["orchid", "tonic-tray", "tonic-bottle", "kitchen-glass", "vale-mixed-tonic", "chemist-book"],
     why: ["burned-letter", "henrys-letters", "orchid"],
+    howChoice: "poison",
+    whyChoice: "stolen-work",
+    panels: [
+      { art: "vale", time: "Years ago", text: "Dr. Edmund Vale presented Lord Henry's foxglove remedy to the Royal Society as his own. It made him famous." },
+      { art: "study", time: "9:40 pm", text: "Lady Verity had found Henry's letters. Vale mixed her tonic himself and added twenty times the dose of digitalis." },
+      { art: "conservatory", time: "11:10 pm", text: "He said goodbye at 10:15 and never left. Verity drank, and as her heart failed she spilled the last on Henry's orchid." },
+      { art: "study", time: "11:25 pm", text: "He forced her desk with a surgeon's probe and burned Henry's letters. One scrap survived. At 11:40 his carriage passed the gate." },
+    ],
     summary:
       "Dr. Edmund Vale poisoned Lady Verity with digitalis in her heart tonic to stop her exposing that he stole Lord Henry's research.",
     reveal:

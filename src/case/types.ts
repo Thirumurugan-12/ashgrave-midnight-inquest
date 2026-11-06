@@ -21,7 +21,13 @@ export interface Evidence {
   supports?: Array<"who" | "how" | "why">;
   /** Clears a suspect when found. */
   clears?: SuspectId;
+  /** Which lab test reveals something. The wrong test shows nothing (no penalty). */
+  reagent?: Reagent;
+  /** Too fragile for the lab: players piece it together by hand. The lab text is what they read. */
+  puzzle?: boolean;
 }
+
+export type Reagent = "poison" | "soil" | "ink" | "metal";
 
 export interface PrivateClue {
   id: EvidenceId;
@@ -34,6 +40,8 @@ export interface PrivateClue {
 
 /** A lie that breaks when a player presents the right evidence. */
 export interface Crack {
+  /** The lie in one line, as the suspect tells it. Shown to players so they know what to disprove. */
+  claim: string;
   /** Any one of these breaks the lie. */
   triggers: EvidenceId[];
   /** Instruction given to the suspect once cracked. */
@@ -67,11 +75,31 @@ export interface GhostMemory {
   memory: string;
 }
 
+export interface Goal {
+  text: string;
+  kind: "found" | "tested" | "restored" | "lies" | "accused";
+  count?: number;
+}
+
 export interface Act {
   number: number;
   title: string;
   /** Narration the Game Master posts when the act begins. */
   opening: string;
+  /** Finish these and the next chapter begins. */
+  goals: Goal[];
+}
+
+export interface Choice {
+  id: string;
+  text: string;
+  keywords: string[];
+}
+
+export interface RevealPanel {
+  art: string;
+  time: string;
+  text: string;
 }
 
 export interface Solution {
@@ -80,6 +108,11 @@ export interface Solution {
   how: EvidenceId[];
   why: EvidenceId[];
   who: EvidenceId[];
+  /** The right answers in the multiple-choice accusation. */
+  howChoice: string;
+  whyChoice: string;
+  /** The finale: the crime shown in a few painted panels. */
+  panels: RevealPanel[];
   summary: string;
   reveal: string;
 }
@@ -95,5 +128,7 @@ export interface Case {
   suspects: Suspect[];
   ghost: { agent: string; name: string; persona: string; memories: GhostMemory[] };
   acts: Act[];
+  /** Options for the accusation. Only the solution says which is right. */
+  accusation: { how: Choice[]; why: Choice[] };
   solution: Solution;
 }

@@ -35,15 +35,18 @@ test("searching reveals only evidence for the current act", () => {
   assert.ok(g.found.has("burned-letter"));
 });
 
-test("the lab only tests found evidence and spends tests", () => {
+test("the lab only tests found evidence, and the wrong test costs nothing", () => {
   const { g } = started();
   assert.match(g.lab("@forensics-lab the orchid").text, /Bring me something/);
   g.command(thiru, "room-shared", "@game-master search conservatory", t0);
-  const r = g.lab("@forensics-lab please test the black orchid");
+  const miss = g.lab("@forensics-lab test the black orchid with the ink-and-paper test");
+  assert.ok(miss.miss && !miss.tested);
+  assert.match(miss.text, /shows nothing/);
+  assert.ok(!g.labDone.has("orchid"));
+  const r = g.lab("@forensics-lab test the black orchid with Keller's poison test");
   assert.match(r.text, /digitalis/);
-  assert.equal(g.labTestsLeft, 5);
-  g.lab("@forensics-lab orchid again");
-  assert.equal(g.labTestsLeft, 5, "re-testing is free");
+  assert.ok(g.labDone.has("orchid"));
+  assert.match(g.lab("@forensics-lab please test the tonic tray").text, /digitalis/, "no test named: just run it");
 });
 
 test("a lie cracks only on proof, and testimony is unlocked", () => {
@@ -67,16 +70,18 @@ test("private clues are proof as soon as they are dealt", () => {
   assert.ok(g.found.has("vale-mixed-tonic"));
 });
 
-test("the doctor cannot be questioned after his carriage leaves", () => {
-  const { g } = started();
+test("timed: the doctor cannot be questioned after his carriage leaves", () => {
+  const g = new Game(blackOrchid, rooms, opts);
+  g.command(thiru, "room-shared", "@game-master start timed", t0);
+  assert.equal(g.pace, "timed");
   const vale = g.suspectByAgent("dr-vale")!;
-  g.tick(t0 + 10 * 60_000); // act II
-  g.tick(t0 + 20 * 60_000); // act III
+  g.tick(t0 + 8 * 60_000); // chapter II
+  g.tick(t0 + 16 * 60_000); // chapter III
   assert.equal(g.act, 3);
   assert.equal(g.suspect(vale, "where were you").gone, false);
-  g.tick(t0 + 28 * 60_000); // carriage leaves, act IV
-  assert.equal(g.act, 4);
+  g.tick(t0 + 22 * 60_000); // carriage leaves
   assert.equal(g.suspect(vale, "where were you").gone, true);
+  assert.equal(g.phase, "playing", "you can still accuse");
 });
 
 test("the ghost recalls only what she is shown", () => {
@@ -169,17 +174,81 @@ test("a player's snapshot never leaks the solution or other players' clues", () 
   assert.ok(snap.locations.find((l) => l.id === "conservatory")!.searched);
 });
 
-test("a quick game shortens the acts", () => {
-  const g = new Game(blackOrchid, rooms, opts);
-  g.command(thiru, "room-shared", "@game-master start quick", t0);
-  assert.equal(g.pace, "quick");
-  assert.equal(g.snapshot("thiru").nextActAt, t0 + 5 * 60_000);
-  const posts = g.tick(t0 + 10 * 60_000 + 1); // act II -> ...
+test("story mode has no clock: chapters open when their goals are done", () => {
+  const { g } = started();
+  assert.equal(g.pace, "story");
+  assert.equal(g.snapshot("thiru").nextActAt, null);
+  assert.deepEqual(g.tick(t0 + 60 * 60_000), [], "time alone does nothing");
+  g.command(thiru, "room-shared", "@game-master search conservatory", t0);
+  g.command(thiru, "room-shared", "@game-master find the tonic bottle", t0);
+  assert.equal(g.goals()[0]!.done, true);
+  assert.equal(g.act, 1);
+  g.lab("@forensics-lab orchid");
+  const posts = g.tick(t0);
   assert.equal(g.act, 2);
-  g.tick(t0 + 20 * 60_000);
-  assert.equal(g.act, 3);
-  assert.match(g.data.acts[2]!.opening, /\{minutes\}/);
-  void posts;
+  assert.ok(posts.some((p) => /Chapter I complete/.test(p.text)));
+  assert.ok(posts.some((p) => /Goals/.test(p.text)));
+});
+
+test("finding one item at a time marks a room searched only when it is empty", () => {
+  const { g } = started();
+  assert.match(g.command(thiru, "room-shared", "@game-master find orchid", t0)[0]!.text, /Black orchid/);
+  assert.ok(!g.searched.has("conservatory"));
+  g.command(thiru, "room-shared", "@game-master find tonic-tray", t0);
+  g.command(thiru, "room-shared", "@game-master find writing-desk", t0);
+  assert.ok(g.searched.has("conservatory"));
+  assert.ok(!g.snapshot("thiru").findable.some((f) => f.location === "conservatory"));
+});
+
+test("the burned letter is pieced together by hand and then counts as proof", () => {
+  const { g } = started();
+  g.command(thiru, "room-shared", "@game-master next", t0);
+  g.command(thiru, "room-shared", "@game-master search study", t0);
+  const snap = g.snapshot("thiru");
+  assert.ok(snap.puzzle && snap.puzzle.pieces.length >= 4);
+  assert.equal(snap.evidence.find((e) => e.id === "burned-letter")!.testable, false);
+  assert.match(g.lab("@forensics-lab burned letter").text, /fragile/);
+  const vale = g.suspectByAgent("dr-vale")!;
+  assert.equal(g.suspect(vale, "Explain the burned letter").fresh.length, 0);
+  const posts = g.command(thiru, "room-shared", "@game-master restore letter", t0);
+  assert.match(posts[0]!.text, /Edmund presented/);
+  assert.equal(g.snapshot("thiru").puzzle, null);
+  assert.equal(g.suspect(vale, "Explain the burned letter").fresh.length, 1);
+  assert.deepEqual(g.snapshot("thiru").links, [{ evidence: "burned-letter", agent: "dr-vale" }]);
+});
+
+test("hints point at the next useful step and never name the killer", () => {
+  const { g } = started();
+  assert.match(g.hint(), /Search/);
+  g.command(thiru, "room-shared", "@game-master search conservatory", t0);
+  g.command(thiru, "room-shared", "@game-master search study", t0);
+  assert.match(g.hint(), /lab/);
+  g.lab("@forensics-lab orchid");
+  g.tick(t0);
+  assert.equal(g.act, 2);
+  assert.match(g.hint(), /study/);
+  // Private clues are proof: the hint shows where one breaks a story.
+  g.command(thiru, "room-shared", "@game-master search study", t0);
+  g.command(thiru, "room-shared", "@game-master restore letter", t0);
+  assert.match(g.hint(), /says: "/);
+  for (let i = 0; i < 12; i++) assert.doesNotMatch(g.hint(), /killer|murderer|guilty/i);
+});
+
+test("the accusation takes multiple-choice answers", () => {
+  const { g } = started();
+  const snap = g.snapshot("thiru");
+  assert.equal(snap.accusation.how.length, 3);
+  assert.equal(snap.accusation.why.length, 3);
+  g.command(thiru, "room-shared", "@game-master accuse dr vale how: poison why: stolen-work", t0);
+  assert.equal(g.verdict!.right && g.verdict!.howOk && g.verdict!.whyOk, true);
+  assert.equal(g.verdict!.panels.length, 4);
+});
+
+test("a wrong motive loses the why points", () => {
+  const { g } = started();
+  g.command(thiru, "room-shared", "@game-master accuse vale how: poisoned why: inherit", t0);
+  assert.equal(g.verdict!.howOk, true);
+  assert.equal(g.verdict!.whyOk, false);
 });
 
 test("playing alone deals every private clue to you", () => {

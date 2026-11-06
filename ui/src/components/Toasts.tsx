@@ -1,11 +1,11 @@
 export interface Toast {
   id: string;
-  kind: "lie" | "found" | "lab";
+  kind: "lie" | "found" | "lab" | "goal";
   title: string;
   body: string;
 }
 
-const ICON = { lie: "🧩", found: "🔎", lab: "🔬" };
+const ICON = { lie: "🧩", found: "🔎", lab: "🔬", goal: "✅" };
 
 export function Toasts({ toasts }: { toasts: Toast[] }) {
   return (

@@ -16,38 +16,43 @@ const STEPS: Step[] = [
     title: "Welcome to Ashgrave",
     body: (
       <>
-        Lady Verity Ashgrave lies dead in her conservatory. Before midnight you must prove three things: <b>who</b> killed her,{" "}
-        <b>how</b>, and <b>why</b>. This tour takes about a minute.
+        Lady Verity Ashgrave lies dead in her conservatory. Find out <b>who</b> killed her, <b>how</b>, and <b>why</b>. The case runs in three
+        short chapters, and this tour takes under a minute.
       </>
     ),
     art: <img className="tour-art wide" src={ART("conservatory")} alt="" />,
   },
   {
+    target: "[data-tour=goals]",
+    title: "Always know what to do",
+    body: <>Each chapter has a couple of goals. Tick them off and the next chapter begins. The button beside them suggests your next move.</>,
+  },
+  {
     target: "[data-tour=scene]",
-    title: "Search the house",
+    title: "Search with your lantern",
     body: (
       <>
-        Each painted room hides evidence. Press <b>Search</b>, then click the glowing markers to inspect what you find.
+        Sweep your mouse over the painted room. Hidden things <b>glint</b>: click them to pick them up. Rooms marked ✨ on the map still hide
+        something.
       </>
     ),
   },
   {
-    target: "[data-tour=map]",
-    title: "Six rooms to explore",
-    body: <>Move between rooms here. A room marked <i>unsearched</i> still holds secrets, and some clues only appear after the bell tolls.</>,
-  },
-  {
-    target: "[data-tour=household]",
-    title: "Question the household",
-    body: <>Click a suspect to question them. Ask anything you like: they answer in character, and every one of them is hiding something.</>,
+    target: "[data-tour=others]",
+    title: "The lab and the ghost",
+    body: (
+      <>
+        At the <b>Forensics Lab</b>, pick the test you think fits. A wrong guess costs nothing. Stuck? <b>Lady Verity's ghost</b> gives you a hint.
+      </>
+    ),
   },
   {
     target: "[data-tour=household]",
     title: "Catch them lying",
     body: (
       <>
-        When a story doesn't fit, <b>present the evidence</b> that contradicts it. If you're right, their lie breaks, you score a point, and they may
-        give up new testimony. Not every liar is the killer.
+        Open a suspect to see <b>their story</b>, line by line. Drag in the evidence that proves a line false and their lie breaks. Not every liar
+        is the killer.
       </>
     ),
     art: (
@@ -58,42 +63,22 @@ const STEPS: Step[] = [
     ),
   },
   {
-    target: "[data-tour=others]",
-    title: "The ghost and the lab",
-    body: (
-      <>
-        Show <b>Lady Verity's ghost</b> what you found and her memory returns, though not always correctly. The <b>Forensics Lab</b> tells you what
-        evidence really means. You get six tests.
-      </>
-    ),
-  },
-  {
-    target: "[data-tour=tabs]",
-    title: "Your case file",
-    body: (
-      <>
-        The <b>Case file</b> keeps your evidence, testimony and your <b>secret clues</b>. Playing alone? You hold all four. <b>Room</b> shows the live
-        chat everyone shares.
-      </>
-    ),
-  },
-  {
-    target: "[data-tour=clock]",
-    title: "The clock is ticking",
-    body: <>A bell tolls each new act. In Act III the doctor calls for his carriage, and once he leaves he answers no more questions.</>,
+    target: "[data-tour=board]",
+    title: "The evidence board",
+    body: <>Everything you find gets pinned here. Red string links each clue to the story it broke, and the meter shows how much of the case you've uncovered.</>,
   },
   {
     target: "[data-tour=accuse]",
-    title: "Make your accusation",
-    body: <>When you're sure, accuse: pick the suspect, then the evidence for how and why. You get one shot, so agree with your team first.</>,
+    title: "Name the killer",
+    body: <>When you're ready, make three picks: who, how and why. You only get one try, so agree with your team first.</>,
   },
   {
     target: "[data-tour=switch]",
     title: "Behind the curtain: Switch",
     body: (
       <>
-        Every suspect is an <b>AI agent</b> in a <b>Switch room</b> on Mattermost. Everything you do here is posted there as you, so friends can play
-        from chat too. Click this badge to watch the room live.
+        Every character is an <b>AI agent</b> in a <b>Switch room</b> on Mattermost. Everything you do here is posted there as you, so friends can
+        play from chat too.
       </>
     ),
   },

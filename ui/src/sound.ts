@@ -68,6 +68,22 @@ class Sound {
     for (const [f, g] of [[196, 0.3], [392, 0.12], [523, 0.08], [784, 0.04]] as const) this.tone(f, 4.5, g);
   }
 
+  /** Something found: a small bright chime. */
+  chime(): void {
+    this.tone(1046, 0.6, 0.08, "triangle");
+    this.tone(1568, 0.8, 0.05, "triangle", 0.08);
+  }
+
+  /** It didn't fit: a soft low knock. */
+  thud(): void {
+    this.tone(90, 0.25, 0.25, "sine");
+  }
+
+  /** A goal ticked off or a puzzle solved. */
+  success(): void {
+    [523, 659, 784].forEach((f, i) => this.tone(f, 0.5, 0.08, "triangle", i * 0.09));
+  }
+
   sting(): void {
     this.tone(110, 1.2, 0.25, "sawtooth");
     this.tone(116.5, 1.2, 0.2, "sawtooth", 0.02);

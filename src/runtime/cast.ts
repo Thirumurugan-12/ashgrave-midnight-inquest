@@ -119,8 +119,21 @@ export async function handle(agent: string, msg: Incoming, deps: CastDeps): Prom
 
   if (agent === GM) {
     await flush(game.command({ id: msg.senderId, name: msg.senderName }, msg.roomId, msg.body, Date.now()));
+    await flush(game.tick(Date.now()));
     return;
   }
+  try {
+    await respond(agent, msg, deps);
+  } finally {
+    // Finishing a chapter's goals opens the next one straight away.
+    await flush(game.tick(Date.now()));
+  }
+}
+
+async function respond(agent: string, msg: Incoming, deps: CastDeps): Promise<void> {
+  const { game, speaker, bus, transcript } = deps;
+  const data = game.data;
+  const say = (text: string) => bus.post(agent, msg.roomId, text);
 
   if (game.phase !== "playing") {
     await say("*(The house is quiet. Ask the game master to begin: `@game-master start`.)*");
@@ -128,10 +141,10 @@ export async function handle(agent: string, msg: Incoming, deps: CastDeps): Prom
   }
 
   if (agent === LAB) {
-    const { text, tested } = game.lab(msg.body);
-    if (tested) {
-      await say(`🧪 *The lab takes the ${tested.name.toLowerCase()}. Glass clinks, a flame hisses...*`);
-      await new Promise((r) => setTimeout(r, deps.labDelayMs ?? 3000));
+    const { text, tested, miss } = game.lab(msg.body);
+    if (tested || miss) {
+      await say(`🧪 *The lab takes the ${(tested ?? miss)!.name.toLowerCase()}. Glass clinks, a flame hisses...*`);
+      await new Promise((r) => setTimeout(r, tested ? (deps.labDelayMs ?? 2500) : (deps.labDelayMs ?? 2500) / 2));
     }
     await say(text);
     return;
@@ -151,6 +164,19 @@ export async function handle(agent: string, msg: Incoming, deps: CastDeps): Prom
   }
 
   if (agent === data.ghost.agent) {
+    if (/\b(hint|stuck|help)\b/i.test(stripMentions(msg.body))) {
+      const hint = game.hint();
+      const line = await speaker.speak({
+        model: models.ghost,
+        system: ghostSystem(data),
+        situation: `THE DETECTIVES ARE STUCK AND ASK YOU FOR GUIDANCE. You sense what they must do next:\n${hint}\nGuide them toward it in one or two short, haunted lines. Keep every name, object and place from the guidance so they can follow it. Do not add anything else.`,
+        prompt: `${msg.senderName} says to you: ${stripMentions(msg.body)}`,
+        fallbackLine: `*The candles gutter. A whisper:* ${hint}`,
+        effort: "minimal",
+      });
+      await say(`${line}\n\n🕯️ *Hint: ${hint}*`);
+      return;
+    }
     const { memories, fresh } = game.ghost(msg.body);
     const situation = `MEMORIES YOU HAVE RECOVERED:\n${memories.map((m) => `- ${m}`).join("\n")}${
       fresh.length ? `\n\nJUST NOW, WHAT YOU WERE SHOWN BRINGS BACK:\n${fresh.map((m) => `- ${m}`).join("\n")}\nShare this new memory in your reply.` : ""

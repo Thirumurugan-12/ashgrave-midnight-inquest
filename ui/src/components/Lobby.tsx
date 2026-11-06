@@ -4,7 +4,7 @@ import { ART } from "../data.ts";
 
 export function Lobby({ state, conn, toured, onTour }: { state: Snapshot; conn: GameConnection; toured: boolean; onTour(): void }) {
   const joined = Boolean(state.you);
-  const [pace, setPace] = useState<"quick" | "full">("quick");
+  const [pace, setPace] = useState<"story" | "timed">("story");
   const solo = state.players.length <= 1;
 
   return (
@@ -24,7 +24,7 @@ export function Lobby({ state, conn, toured, onTour }: { state: Snapshot; conn: 
         </ol>
         <p className="muted small">
           {solo
-            ? "Playing alone works well: you'll hold all four secret clues. Friends can join from their own browser or from #conservatory in Mattermost."
+            ? "Playing alone works well: you'll hold all four secret clues, and a hint is always one click away. Friends can join from their own browser or from #conservatory in Mattermost."
             : "Each detective gets their own secret clues. Decide together what to share."}
         </p>
 
@@ -56,20 +56,20 @@ export function Lobby({ state, conn, toured, onTour }: { state: Snapshot; conn: 
           <div className={`step-card ${toured && joined ? "now" : ""}`}>
             <span className="step-n">3</span>
             <div>
-              <b>Choose the pace</b>
+              <b>Choose a mode</b>
               <div className="pace" role="radiogroup" aria-label="Game length">
-                <button role="radio" aria-checked={pace === "quick"} className={pace === "quick" ? "on" : ""} onClick={() => setPace("quick")}>
-                  Quick case <span>about 15 min · best for a first game</span>
+                <button role="radio" aria-checked={pace === "story"} className={pace === "story" ? "on" : ""} onClick={() => setPace("story")}>
+                  Story <span>no clock · about 15 min · recommended</span>
                 </button>
-                <button role="radio" aria-checked={pace === "full"} className={pace === "full" ? "on" : ""} onClick={() => setPace("full")}>
-                  Full case <span>about 35 min</span>
+                <button role="radio" aria-checked={pace === "timed"} className={pace === "timed" ? "on" : ""} onClick={() => setPace("timed")}>
+                  Timed <span>a clock on every chapter · hard</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <button className="btn big" disabled={!toured || !joined} onClick={() => conn.say(`@game-master start${pace === "quick" ? " quick" : ""}`)}>
+        <button className="btn big" disabled={!toured || !joined} onClick={() => conn.say(`@game-master start${pace === "timed" ? " timed" : ""}`)}>
           Begin the inquest
         </button>
         {!toured && <p className="muted small center">Take the tour first: it unlocks the inquest.</p>}

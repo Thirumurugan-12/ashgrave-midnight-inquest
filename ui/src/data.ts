@@ -61,13 +61,20 @@ export const PORTRAITS: Record<string, string> = {
 };
 
 export const ACT_SUBTITLES: Record<number, string> = {
-  1: "Search the house. Test what you find. Wake the dead.",
-  2: "Press the household. Somebody here is lying.",
-  3: "The doctor has called for his carriage.",
-  4: "The clock strikes twelve. Name the killer.",
+  1: "Search the house. Test what you find.",
+  2: "Somebody here is lying. Prove it.",
+  3: "The clock strikes twelve. Name the killer.",
 };
 
 export const ROMAN = ["", "I", "II", "III", "IV"];
+
+/** The lab's four tests. Each reveals one kind of thing; the wrong one shows nothing. */
+export const REAGENTS = [
+  { id: "poison", name: "Keller's poison test", detects: "Heart poisons such as digitalis", color: "#5fbf8f", icon: "☠️" },
+  { id: "soil", name: "Soil sieve", detects: "Earth, peat and plant matter", color: "#9b6b3c", icon: "🪴" },
+  { id: "ink", name: "Ink-and-paper test", detects: "How old the writing is", color: "#4c6fd0", icon: "🖋️" },
+  { id: "metal", name: "Metal-trace powder", detects: "Tool marks and residue", color: "#b8c0c8", icon: "🔩" },
+] as const;
 
 /** A rough read of a character's mood from their latest line. */
 export type Mood = "composed" | "nervous" | "shaken" | "angry";

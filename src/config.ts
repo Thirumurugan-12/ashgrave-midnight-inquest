@@ -10,7 +10,7 @@ export const bridgeUrl = () => process.env.SWITCH_BRIDGE_URL ?? "http://localhos
 export const gameOptions = () => ({
   actMinutes: Number(process.env.ACT_MINUTES ?? 10),
   carriageMinutes: Number(process.env.CARRIAGE_MINUTES ?? 8),
-  labTests: Number(process.env.LAB_TESTS ?? 6),
+  labTests: Number(process.env.LAB_TESTS ?? 99),
 });
 
 export function readAgents(): Record<string, AgentCredentials> {
