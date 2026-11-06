@@ -1,0 +1,43 @@
+<template>
+  <style>
+    @font-face { font-family: "IM Fell English SC"; src: url("assets/fonts/im-fell-sc.woff2") format("woff2"); }
+    @font-face { font-family: "IM Fell English"; font-style: italic; src: url("assets/fonts/im-fell-italic.woff2") format("woff2"); }
+    @font-face { font-family: "Courier Prime"; font-weight: 700; src: url("assets/fonts/courier-prime-bold.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0d100f; }
+    .shot { position: absolute; inset: 0; }
+    .shot video, .shot img { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .slip { position: absolute; left: 110px; bottom: 120px; z-index: 20; }
+    .slip-in { position: relative; padding: 26px 46px 28px; background: linear-gradient(#ecdfbf, #d8c59c); color: #2b2419;
+      border: 2px solid #8a5a20; border-radius: 2px; box-shadow: 0 18px 40px #000a, inset 0 0 40px #8a5a2033; }
+    .slip-in h2 { margin: 0; font: 400 76px/1 "IM Fell English SC", serif; white-space: nowrap; }
+    .slip-in p { margin: 10px 0 0; font: italic 34px/1.2 "IM Fell English", serif; color: #5a4630; }
+    .pin { position: absolute; top: -12px; left: 50%; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff9a8a, #9c2a20 70%); box-shadow: 0 4px 6px #0009; }
+    #s10-art { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; transform-origin: 70% 50%; }
+    .shade { position: absolute; inset: 0; background: linear-gradient(90deg, #0d100ff2 0%, #0d100fcc 38%, #0d100f00 70%); }
+    .card { position: absolute; left: 150px; top: 300px; width: 1000px; }
+    .card h1 { margin: 0; font: 400 220px/0.9 "IM Fell English SC", serif; color: #e2d6bb; }
+    .card .sub { margin: 18px 0 0; font: italic 64px/1 "IM Fell English", serif; color: #e0a95c; }
+    .card .line { margin: 46px 0 0; font: italic 42px/1.25 "IM Fell English", serif; color: #e2d6bb; }
+    .card .how { margin: 22px 0 0; font: 700 28px/1.4 "Courier Prime", monospace; letter-spacing: 0.06em; color: #a99f89; }
+  </style>
+  <div id="root" data-composition-id="s10" data-width="1920" data-height="1080" data-layout-allow-overflow>
+    <img id="s10-art" class="clip" src="assets/art/title.webp" data-start="0" data-duration="6.0" alt="" />
+    <div id="s10-shade" class="shade"></div>
+    <div id="s10-card" class="card">
+      <h1 id="s10-name">Ashgrave</h1>
+      <p id="s10-sub" class="sub">The Midnight Inquest</p>
+      <p id="s10-line" class="line">A murder mystery your team solves together</p>
+      <p id="s10-how" class="how">Play solo or with your team &middot; about 15 minutes &middot; AI suspects on Switch</p>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#s10-art", { scale: 1.0 }, { scale: 1.08, duration: 6.0, ease: "none" }, 0);
+    tl.fromTo("#s10-name", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 1.0, ease: "power3.inOut" }, 0.2);
+    tl.fromTo("#s10-sub", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 1.0);
+    tl.fromTo("#s10-line", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 1.5);
+    tl.fromTo("#s10-how", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 2.0);
+    window.__timelines["s10"] = tl;
+  </script>
+</template>

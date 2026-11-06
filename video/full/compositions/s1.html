@@ -1,0 +1,41 @@
+<template>
+  <style>
+    @font-face { font-family: "IM Fell English SC"; src: url("assets/fonts/im-fell-sc.woff2") format("woff2"); }
+    @font-face { font-family: "IM Fell English"; font-style: italic; src: url("assets/fonts/im-fell-italic.woff2") format("woff2"); }
+    @font-face { font-family: "Courier Prime"; font-weight: 700; src: url("assets/fonts/courier-prime-bold.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0d100f; }
+    .shot { position: absolute; inset: 0; }
+    .shot video, .shot img { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+    .slip { position: absolute; left: 110px; bottom: 120px; z-index: 20; }
+    .slip-in { position: relative; padding: 26px 46px 28px; background: linear-gradient(#ecdfbf, #d8c59c); color: #2b2419;
+      border: 2px solid #8a5a20; border-radius: 2px; box-shadow: 0 18px 40px #000a, inset 0 0 40px #8a5a2033; }
+    .slip-in h2 { margin: 0; font: 400 76px/1 "IM Fell English SC", serif; white-space: nowrap; }
+    .slip-in p { margin: 10px 0 0; font: italic 34px/1.2 "IM Fell English", serif; color: #5a4630; }
+    .pin { position: absolute; top: -12px; left: 50%; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff9a8a, #9c2a20 70%); box-shadow: 0 4px 6px #0009; }
+    .hero { position: absolute; left: 0; right: 0; top: 190px; z-index: 20; text-align: center; }
+    .hero h1 { margin: 0; font: 400 120px/1 "IM Fell English SC", serif; color: #e2d6bb; text-shadow: 0 6px 30px #000, 0 2px 4px #000; }
+  </style>
+  <div id="root" data-composition-id="s1" data-width="1920" data-height="1080" data-layout-allow-overflow>
+    <div id="s1-shot1" class="shot" style="transform-origin: 50% 45%">
+      <video id="s1-v1" class="clip" src="assets/footage/play.mp4" data-start="0.00" data-duration="3.8" data-media-start="0.6" muted playsinline></video>
+    </div>
+    <div id="s1-shot2" class="shot" style="transform-origin: 40% 55%">
+      <video id="s1-v2" class="clip" src="assets/footage/play.mp4" data-start="3.80" data-duration="3.8" data-media-start="33.53" muted playsinline></video>
+    </div>
+    <div id="s1-shot3" class="shot" style="transform-origin: 50% 50%">
+      <video id="s1-v3" class="clip" src="assets/footage/play.mp4" data-start="7.60" data-duration="3.4" data-media-start="37.49" muted playsinline></video>
+    </div>
+    <div id="s1-hero" class="hero clip" data-start="6.3" data-duration="4.70">
+      <h1 id="s1-hero-text">Who killed Lady Verity?</h1>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#s1-shot1", { scale: 1.0 }, { scale: 1.06, duration: 3.8, ease: "none" }, 0.00);
+    tl.fromTo("#s1-shot2", { scale: 1.0 }, { scale: 1.06, duration: 3.8, ease: "none" }, 3.80);
+    tl.fromTo("#s1-shot3", { scale: 1.02 }, { scale: 1.1, duration: 3.4, ease: "none" }, 7.60);
+    tl.fromTo("#s1-hero-text", { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 6.3);
+    window.__timelines["s1"] = tl;
+  </script>
+</template>

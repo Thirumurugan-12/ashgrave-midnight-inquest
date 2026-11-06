@@ -1,0 +1,29 @@
+{
+  "tts_provider": "kokoro",
+  "voice_id": "bm_george",
+  "bgm": null,
+  "bgm_pending": false,
+  "bgm_provider": null,
+  "bgm_pid": null,
+  "bgm_log": null,
+  "bgm_mode": null,
+  "bgm_target_duration_s": null,
+  "bgm_seed_duration_s": null,
+  "bgm_loop_count": null,
+  "voices": [
+    {
+      "id": "x1",
+      "path": "assets/voice/x1.wav",
+      "duration_s": 1.493,
+      "words": []
+    },
+    {
+      "id": "x2",
+      "path": "assets/voice/x2.wav",
+      "duration_s": 5.952,
+      "words": []
+    }
+  ],
+  "sfx": [],
+  "total_duration_s": 7.445
+}

@@ -1,0 +1,5 @@
+{ "provider": "kokoro", "voice": "bm_george", "lang": "en-gb", "speed": 0.97,
+  "lines": [
+    { "id": "x1", "text": "Here's how to play." },
+    { "id": "x2", "text": "So how does a whole murder mystery live inside your team's chat? Under the hood, it's Switch." }
+  ], "bgm": { "mode": "none" } }
