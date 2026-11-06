@@ -1,0 +1,8 @@
+.hyperframes/
+renders/
+node_modules/
+assets/bgm/track.wav
+assets/bgm/*.log
+assets/footage/play.mp4
+.thumbnails/
+.waveform-cache/

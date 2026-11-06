@@ -570,3 +570,5 @@ input:focus { outline: none; border-color: var(--candle-deep); }
 .answers .no b { color: #e0574a; }
 .panel-fg { position: absolute; left: 50%; top: 6%; height: 62%; transform: translateX(-50%); border-radius: 4px; box-shadow: 0 30px 80px #000; animation: rise 1s ease both; filter: sepia(.2); }
 .panel-stage:has(.panel-fg) .panel-art { filter: blur(18px) brightness(.45); }
+/* Overlays size to the screen, never to their content. */
+.talk-layout { height: min(760px, calc(100vh - 48px)); }

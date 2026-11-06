@@ -1,0 +1,19 @@
+{
+  "provider": "kokoro",
+  "voice": "bm_george",
+  "lang": "en-gb",
+  "speed": 0.95,
+  "lines": [
+    { "id": "s1", "text": "Ashgrave Manor, eighteen eighty-nine. Lady Verity lies dead, a black orchid in her hand. Before midnight, you must prove who killed her, how, and why.", "sfx": ["thunder rumble"] },
+    { "id": "s2", "text": "The case runs in three short chapters. Your goals sit at the top, so you always know the next move.", "sfx": ["church bell"] },
+    { "id": "s3", "text": "Sweep your lantern across each room. Anything that glints is evidence. Click it, and it flies into your case file.", "sfx": ["ui click", "chime"] },
+    { "id": "s4", "text": "At the forensics lab, pick the test you think fits. A wrong guess simply fizzles. The right one reveals the poison.", "sfx": ["bubbling liquid"] },
+    { "id": "s5", "text": "One letter survived the fire. Piece the scraps back together, and a motive returns.", "sfx": ["paper rustle"] },
+    { "id": "s6", "text": "Every suspect is an AI character guarding a secret. Present the evidence that breaks a line of their story, and the lie cracks.", "sfx": ["rubber stamp"] },
+    { "id": "s7", "text": "Stuck? Lady Verity's ghost will nudge you. And your evidence board ties every clue to the lie it broke.", "sfx": ["whoosh"] },
+    { "id": "s8", "text": "When you're ready, make three choices: who, how, and why. One accusation. No second chances.", "sfx": ["impact"] },
+    { "id": "s9", "text": "Every move lands in your team's Mattermost through Switch, so friends can play straight from chat.", "sfx": ["pop"] },
+    { "id": "s10", "text": "Ashgrave. A murder mystery your team solves together." }
+  ],
+  "bgm": { "mode": "generate", "prompt": "dark victorian mystery underscore, slow 70 bpm, low cello and sparse piano, soft rain ambience, tense but restrained, cinematic, no drums" }
+}
