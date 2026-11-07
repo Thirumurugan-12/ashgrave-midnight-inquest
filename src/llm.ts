@@ -30,8 +30,13 @@ export interface Speaker {
   speak(req: SpeakRequest): Promise<string>;
 }
 
+/** Tried in order when a model isn't served to this key from where the server runs. */
+const FALLBACK_MODELS = ["muse-spark-1.3", "muse-spark-1.2", "muse-spark-1.1"];
+
 export class MuseSpeaker implements Speaker {
   private client: OpenAI;
+  /** A requested model that returned 404, mapped to the one that worked instead. */
+  private swapped = new Map<string, string>();
 
   constructor(apiKey = process.env.MODEL_API_KEY) {
     if (!apiKey) throw new Error("MODEL_API_KEY is not set. Add your Meta Model API key to .env.");
@@ -45,9 +50,10 @@ export class MuseSpeaker implements Speaker {
     if (req.situation) messages.push({ role: "developer", content: req.situation });
     messages.push({ role: "user", content: req.prompt });
 
+    const model = this.swapped.get(req.model) ?? req.model;
     try {
       const res = await this.client.chat.completions.create({
-        model: req.model,
+        model,
         // Reasoning tokens count toward max_tokens, so leave room beyond the short reply.
         max_tokens: 2048,
         reasoning_effort: req.effort ?? "low",
@@ -57,6 +63,14 @@ export class MuseSpeaker implements Speaker {
       return text || req.fallbackLine;
     } catch (err) {
       if (err instanceof OpenAI.RateLimitError) return "*(pauses, gathering their thoughts... ask again in a moment)*";
+      if (err instanceof OpenAI.NotFoundError) {
+        const next = FALLBACK_MODELS[FALLBACK_MODELS.indexOf(model) + 1];
+        if (next) {
+          console.warn(`Model ${model} not found for this key here; falling back to ${next}`);
+          this.swapped.set(req.model, next);
+          return this.speak(req);
+        }
+      }
       if (err instanceof OpenAI.AuthenticationError) {
         console.error("Meta Model API key missing or invalid: check MODEL_API_KEY in .env");
       } else if (err instanceof OpenAI.APIError) {
@@ -66,6 +80,18 @@ export class MuseSpeaker implements Speaker {
       }
       return req.fallbackLine;
     }
+  }
+}
+
+/** Logs the models this key can use from here, to diagnose "model not found". */
+export async function logModels(apiKey = process.env.MODEL_API_KEY): Promise<void> {
+  if (!apiKey) return;
+  try {
+    const res = await fetch(`${process.env.MODEL_BASE_URL ?? "https://api.meta.ai/v1"}/models`, { headers: { Authorization: `Bearer ${apiKey}` } });
+    const body = (await res.json()) as { data?: Array<{ id: string }> };
+    console.log(`Meta models available here (${res.status}): ${(body.data ?? []).map((m) => m.id).join(", ")}`);
+  } catch (err) {
+    console.warn("Could not list Meta models:", (err as Error).message);
   }
 }
 

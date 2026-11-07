@@ -6,3 +6,4 @@ rooms.json
 .DS_Store
 infra/.env
 ui/dist/
+deploy/railway.secrets

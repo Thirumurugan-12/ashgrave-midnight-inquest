@@ -2,8 +2,10 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { AgentCredentials } from "./switch/client.ts";
 import type { RoomDirectory } from "./engine/game.ts";
 
-export const AGENTS_FILE = ".switch-agents.json";
-export const ROOMS_FILE = "rooms.json";
+// STATE_DIR keeps agent keys and room ids on a persistent volume when hosted.
+const STATE_DIR = process.env.STATE_DIR ?? ".";
+export const AGENTS_FILE = `${STATE_DIR}/.switch-agents.json`;
+export const ROOMS_FILE = `${STATE_DIR}/rooms.json`;
 
 export const bridgeUrl = () => process.env.SWITCH_BRIDGE_URL ?? "http://localhost:8000";
 

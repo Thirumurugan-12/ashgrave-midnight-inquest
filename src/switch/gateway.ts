@@ -3,14 +3,20 @@
 
 import { existsSync, readFileSync } from "node:fs";
 
+const STACK_KEYS = ["GATEWAY_ADMIN_EMAIL", "GATEWAY_ADMIN_PASSWORD", "MATTERMOST_USER", "MATTERMOST_USER_PASSWORD", "MATTERMOST_TEAM_NAME", "MATTERMOST_HOST_PORT"];
+
+/** The stack's settings: infra/.env locally, or the same names as environment variables when hosted. */
 export function readInfraEnv(path = "infra/.env"): Record<string, string> {
-  if (!existsSync(path)) return {};
-  return Object.fromEntries(
-    readFileSync(path, "utf8")
-      .split("\n")
-      .filter((l) => /^[A-Z_]+=/.test(l))
-      .map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)]),
-  );
+  const file = existsSync(path)
+    ? Object.fromEntries(
+        readFileSync(path, "utf8")
+          .split("\n")
+          .filter((l) => /^[A-Z_]+=/.test(l))
+          .map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)]),
+      )
+    : {};
+  const fromEnv = Object.fromEntries(STACK_KEYS.filter((k) => process.env[k]).map((k) => [k, process.env[k]!]));
+  return { ...file, ...fromEnv };
 }
 
 export class GatewayAdmin {

@@ -46,6 +46,8 @@ export class UiServer {
   private feed: FeedMessage[] = [];
   private thinking = new Map<string, number>();
   private readonly mm: string;
+  /** Where people open Mattermost; differs from mm when the server reaches it on a private network. */
+  private readonly mmPublic: string;
   private readonly team: string;
   private readonly infra = readInfraEnv();
   private seq = 0;
@@ -53,10 +55,11 @@ export class UiServer {
   constructor(
     private readonly game: Game,
     private readonly rooms: RoomDirectory,
-    private readonly port = Number(process.env.UI_PORT ?? 5180),
+    private readonly port = Number(process.env.PORT ?? process.env.UI_PORT ?? 5180),
     private readonly distDir = "ui/dist",
   ) {
     this.mm = process.env.MATTERMOST_URL ?? `http://localhost:${this.infra.MATTERMOST_HOST_PORT ?? 8065}`;
+    this.mmPublic = process.env.MATTERMOST_PUBLIC_URL ?? this.mm;
     this.team = process.env.MATTERMOST_TEAM ?? this.infra.MATTERMOST_TEAM_NAME ?? "ashgrave";
   }
 
@@ -114,7 +117,7 @@ export class UiServer {
     this.send(s, {
       type: "welcome",
       quickPlayers: this.quickPlayers(),
-      mattermostUrl: `${this.mm}/${this.team}/channels/conservatory`,
+      mattermostUrl: `${this.mmPublic}/${this.team}/channels/conservatory`,
     });
   }
 
@@ -125,7 +128,7 @@ export class UiServer {
         const password = msg.password ? String(msg.password) : this.localPassword(username);
         if (!username || !password) throw new Error("Enter your Mattermost username and password.");
         await this.login(s, username, password);
-        this.send(s, { type: "ready", username: s.username, mattermostUrl: `${this.mm}/${this.team}/channels/conservatory` });
+        this.send(s, { type: "ready", username: s.username, mattermostUrl: `${this.mmPublic}/${this.team}/channels/conservatory` });
         this.send(s, { type: "history", messages: this.feed });
         this.send(s, { type: "thinking", agents: [...this.thinking.keys()] });
         this.send(s, { type: "state", state: this.game.snapshot(s.username) });

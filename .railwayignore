@@ -1,0 +1,8 @@
+video/
+infra/
+node_modules/
+ui/dist/
+.env
+.switch-agents.json
+rooms.json
+deploy/railway.secrets

@@ -4,7 +4,7 @@ import { blackOrchid } from "./case/black-orchid.ts";
 import { bridgeUrl, gameOptions, readAgents, readRooms } from "./config.ts";
 import { Game } from "./engine/game.ts";
 import { mentions } from "./engine/match.ts";
-import { EchoSpeaker, MuseSpeaker } from "./llm.ts";
+import { EchoSpeaker, logModels, MuseSpeaker } from "./llm.ts";
 import { handle, roster, Transcript, type Bus, type CastDeps } from "./runtime/cast.ts";
 import { UiServer } from "./runtime/ui-server.ts";
 import { SwitchAgent, type RoomMessage } from "./switch/client.ts";
@@ -44,7 +44,12 @@ ui.start();
 const transcript = new Transcript();
 if (!process.env.MODEL_API_KEY) console.warn("⚠ MODEL_API_KEY not set: characters will give placeholder replies.");
 const speaker = process.env.MODEL_API_KEY ? new MuseSpeaker() : new EchoSpeaker();
+void logModels();
 const deps: CastDeps = { game, speaker, bus, transcript };
+
+// A hosted game is shared by whoever opens the link: start a fresh case once nobody has moved for a while.
+const IDLE_RESET_MS = Number(process.env.IDLE_RESET_MINUTES ?? 20) * 60_000;
+let lastHumanAt = Date.now();
 
 // Every agent sees the same room messages; record each one once.
 const recorded = new Set<string>();
@@ -57,7 +62,10 @@ function onMessage(agentName: string, msg: RoomMessage): void {
     recorded.add(msg.messageId);
     transcript.add(msg.roomId, { name: msg.senderName, body: msg.body });
     console.log(`[${msg.roomId.slice(0, 8)}] ${msg.senderName}: ${msg.body.slice(0, 120)}`);
-    if (!fromUs) ui?.roomMessage(msg.roomId, msg.senderName, msg.body);
+    if (!fromUs) {
+      ui?.roomMessage(msg.roomId, msg.senderName, msg.body);
+      lastHumanAt = Date.now();
+    }
   }
   if (fromUs) return;
   const addressed = msg.addressed || mentions(msg.body, `@${agentName}`);
@@ -84,6 +92,13 @@ for (const [name, agent] of agents) {
 }
 
 setInterval(() => {
+  if (game.phase !== "lobby" && Date.now() - lastHumanAt > IDLE_RESET_MS) {
+    game.reset();
+    lastHumanAt = Date.now();
+    void bus.post("game-master", rooms.shared, "🕯️ The house fell quiet, so a new night begins at Ashgrave. Say `@game-master join`, then `@game-master start`.");
+    ui?.broadcastState();
+    return;
+  }
   const posts = game.tick(Date.now());
   for (const p of posts) void bus.post(p.agent, p.roomId, p.text);
   if (posts.length) ui?.broadcastState();
