@@ -41,10 +41,12 @@ export default function App() {
   const [place, setPlace] = useState("conservatory");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [actShown, setActShown] = useState(0);
+  // The tour opens by itself once per browser session (every new tab or window), not once ever.
   const [touring, setTouring] = useState(false);
+  const autoTour = useRef(false);
   const [toured, setToured] = useState(() => {
     try {
-      return localStorage.getItem("ashgrave.toured") === "1";
+      return sessionStorage.getItem("ashgrave.toured") === "1";
     } catch {
       return false;
     }
@@ -53,11 +55,17 @@ export default function App() {
     setTouring(false);
     setToured(true);
     try {
-      localStorage.setItem("ashgrave.toured", "1");
+      sessionStorage.setItem("ashgrave.toured", "1");
     } catch {
       /* private mode: the tour just shows again next time */
     }
   };
+
+  useEffect(() => {
+    if (autoTour.current || toured || !state) return;
+    autoTour.current = true;
+    setTouring(true);
+  }, [state, toured]);
 
   const actions: Actions = useMemo(
     () => ({
